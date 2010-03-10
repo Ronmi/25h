@@ -1,0 +1,33 @@
+#!/bin/zsh
+
+__ZSH_GIT_BRANCH=
+__ZSH_GIT_BRANCHCOUNT=
+__ZSH_GIT_CLEAN=
+
+zsh_get_git_branch() {
+  local ref cnt
+  ref=$(git symbolic-ref HEAD 2> /dev/null)
+  cnt=$(git branch 2> /dev/null|grep -c -E '*')
+  __ZSH_GIT_BRANCH=$(echo "${ref#refs/heads/}")
+  __ZSH_GIT_BRANCHCOUNT=$cnt
+}
+
+zsh_get_git_clean() {
+  local c1 c2 l1 l2
+  l1=
+  l2=
+  c1=$(git status 2> /dev/null | grep -E '^# Changed but not updated')
+  c2=$(git status 2> /dev/null | grep -E '^# Untracked files')
+  if [[ "$c1" != "" ]]
+  then
+    l1=M
+  fi
+  if [[ "$c2" != "" ]]
+  then
+    l2=U
+  fi
+  __ZSH_GIT_CLEAN=${l1}${l2}
+}
+
+add-zsh-hook precmd zsh_get_git_branch
+add-zsh-hook precmd zsh_get_git_clean

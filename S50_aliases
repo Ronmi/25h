@@ -1,0 +1,9 @@
+#!/bin/zsh
+
+autoload zmv
+
+alias du="du -hcs"
+alias df="df -h"
+
+alias ls="ls --color=auto"
+

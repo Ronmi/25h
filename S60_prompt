@@ -1,0 +1,55 @@
+#!/bin/zsh
+
+setopt prompt_subst
+autoload colors
+colors
+
+rst="%{%b%s%u$fg[1]$bg[7]%}"
+bgc="%{$bg[7]%}"
+
+function prompt_get_git_branch() {
+  if [[ "$__ZSH_GIT_BRANCH" != "" ]]
+  then
+    echo -n "%{-$fg[yellow]%}"
+    echo -n "%{%U${__ZSH_GIT_BRANCH}%u%}"
+    echo -n "%{$fg[white][$fg[green]${__ZSH_GIT_BRANCHCOUNT}%}"
+    echo -n "%{$fg[yellow]${__ZSH_GIT_CLEAN}$fg[white]]%}"
+  fi
+}
+
+function prompt_bat()
+{
+  echo -n "[${ZSH_THEME_BAT_STATE}]"
+}
+
+function prompt_swap()
+{
+  echo -n "[M:$ZSH_PROMPT_MEMORY_FREE S:$ZSH_PROMPT_SWAP_USED]"
+}
+
+function {
+  local l1 l2 nl gitb up bat sw
+  l1='╭'
+  l2='╰'
+  gitb='$(prompt_get_git_branch)'
+  bat='$(prompt_bat)'
+  sw='$(prompt_swap)'
+  nl=$'%{\e[S\e[1G%}'
+  up=$'%{\e[T%}'
+  PROMPT="\
+$up$bgc%{${l1}%}\
+%{$fg[white][$fg[red]%B%~%b$fg[white]]%}$rst\
+$gitb$rst\
+%{-$fg[white][$fg[red]%*$fg[white]]%}$rst\
+$nl$bgc${l2}\
+%n@%m%(!.#.$)$rst "
+
+  RPROMPT="$sw"
+}
+
+function prompt_nl(){echo " ";echo ""}
+
+add-zsh-hook precmd prompt_nl
+
+unset bgc rst
+
