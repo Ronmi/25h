@@ -8,6 +8,7 @@ fi
 
 autoload -U is-at-least
 autoload -U add-zsh-hook
+autoload -U compinit
 
 #[ a ]##########################################################################
 setopt aliases              # expand aliases
