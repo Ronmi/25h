@@ -13,11 +13,14 @@ zsh_get_git_branch() {
 }
 
 zsh_get_git_clean() {
-  local c1 c2 l1 l2
+  local c1 c2 c3 l1 l2 l3 msg
+  msg=$(git status 2> /dev/null)
   l1=
   l2=
-  c1=$(git status 2> /dev/null | grep -E '^# Changed but not updated')
-  c2=$(git status 2> /dev/null | grep -E '^# Untracked files')
+  l3=
+  c1=$(echo "$msg" | grep -E '^# Changed but not updated')
+  c2=$(echo "$msg" | grep -E '^# Untracked files')
+  c3=$(echo "$msg" | grep -E '^# unmerged: ')
   if [[ "$c1" != "" ]]
   then
     l1=M
@@ -26,7 +29,11 @@ zsh_get_git_clean() {
   then
     l2=U
   fi
-  __ZSH_GIT_CLEAN=${l1}${l2}
+  if [[ "$c3" != ""]]
+  then
+    l3=C
+  fi
+  __ZSH_GIT_CLEAN=${l1}${l2}${l3}
 }
 
 add-zsh-hook precmd zsh_get_git_branch
