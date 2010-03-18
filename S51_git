@@ -20,7 +20,7 @@ zsh_get_git_clean() {
   l3=
   c1=$(echo "$msg" | grep -E '^# Changed but not updated')
   c2=$(echo "$msg" | grep -E '^# Untracked files')
-  c3=$(echo "$msg" | grep -E '^# unmerged: ')
+  c3=$(echo "$msg" | grep -E '^#[[:space:]]+unmerged:')
   if [[ "$c1" != "" ]]
   then
     l1=M
