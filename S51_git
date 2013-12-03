@@ -13,34 +13,34 @@ zsh_get_git_branch() {
 }
 
 zsh_get_git_clean() {
-  local c1 c2 c3 c4 l1 l2 l3 l4 tmpfile
+  local tmpfile l c1 c2 c3 c4
   tmpfile=$(mktemp)
-  git status 2> /dev/null > ${tmpfile}
-  l1=
-  l2=
-  l3=
-  l4=
-  c1=$(grep -E '^# Changed but not updated' ${tmpfile})
-  c2=$(grep -E '^# Untracked files' ${tmpfile})
-  c3=$(grep -E '^#[[:space:]]+unmerged:' ${tmpfile})
-  c4=$(grep -E '^# Changes to be committed' ${tmpfile})
-  if [[ "$c1" != "" ]]
+  git status --porcelain 2> /dev/null > ${tmpfile}
+  l=
+  grep -E '^.M' ${tmpfile} > /dev/null 2> /dev/null
+  if [[ $? -eq 0 ]]
   then
-    l1=M
+    l="M"
   fi
-  if [[ "$c2" != "" ]]
+
+  grep -E '^\?\?' ${tmpfile} > /dev/null 2> /dev/null
+  if [[ $? -eq 0 ]]
   then
-    l2=U
+    l="U${l}"
   fi
-  if [[ "$c3" != "" ]]
+
+  grep -E '^(.U|U.|AA)' ${tmpfile} > /dev/null 2> /dev/null
+  if [[ $? -eq 0 ]]
   then
-    l3=C
+    l="C${l}"
   fi
-  if [[ "$c4" != "" ]]
+
+  grep -E '^[MADRC] ' ${tmpfile} > /dev/null 2> /dev/null
+  if [[ $? -eq 0 ]]
   then
-    l4=A
+    l="A${l}"
   fi
-  __ZSH_GIT_CLEAN=${l4}${l1}${l2}${l3}
+  __ZSH_GIT_CLEAN=${l}
   rm -f ${tmpfile}
 }
 
