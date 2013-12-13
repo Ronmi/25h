@@ -3,10 +3,11 @@ ZSH_PROMPT_MEMORY_FREE=
 
 function get_swap_used()
 {
-  local u f p m
-  u=$(free -m|grep Swap|awk '{print $3}')
-  f=$(free -m|grep Swap|awk '{print $2}')
-  ZSH_PROMPT_MEMORY_FREE=$(free -m|grep 'Mem:'|awk '{print $4}')
+  local u f p m z
+  z="$(free -m)"
+  u=$(echo "$z"|grep Swap|awk '{print $3}')
+  f=$(echo "$z"|grep Swap|awk '{print $2}')
+  ZSH_PROMPT_MEMORY_FREE=$(echo "$z"|grep 'Mem:'|awk '{print $4}')
   if test $f -eq 0
   then
     ZSH_PROMPT_SWAP_USED="N/A"
