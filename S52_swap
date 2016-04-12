@@ -1,20 +1,27 @@
+#!/bin/zsh -f
 ZSH_PROMPT_SWAP_USED=
 ZSH_PROMPT_MEMORY_FREE=
 
 function get_swap_used()
 {
   local u f p m z
-  z="$(free -m)"
-  u=$(echo "$z"|grep Swap|awk '{print $3}')
-  f=$(echo "$z"|grep Swap|awk '{print $2}')
-  ZSH_PROMPT_MEMORY_FREE=$(echo "$z"|grep 'Mem:'|awk '{print $4}')
-  if test $f -eq 0
+  if which free
   then
-    ZSH_PROMPT_SWAP_USED="N/A"
-    return
+     z="$(free -m)"
+     u=$(echo "$z"|grep Swap|awk '{print $3}')
+     f=$(echo "$z"|grep Swap|awk '{print $2}')
+     ZSH_PROMPT_MEMORY_FREE=$(echo "$z"|grep 'Mem:'|awk '{print $4}')
+     if test $f -eq 0
+     then
+	 ZSH_PROMPT_SWAP_USED="N/A"
+	 return
+     fi
+     let 'p = u * 100 / f'
+     ZSH_PROMPT_SWAP_USED="$u($p)"
   fi
-  let 'p = u * 100 / f'
-  ZSH_PROMPT_SWAP_USED="$u($p)"
 }
 
-add-zsh-hook precmd get_swap_used
+if which free
+then
+    add-zsh-hook precmd get_swap_used
+fi

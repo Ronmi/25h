@@ -1,19 +1,19 @@
 #!/bin/zsh
 
 if [ x"$HOME" = x ] ; then
-        export HOME=$(cd ~ ; pwd)
+    export HOME=$(cd ~ ; pwd)
 fi
 
 if [ x"$HOSTNAME" = x ] ; then
-        export HOSTNAME=$(hostname)
+    export HOSTNAME=$(hostname)
 fi
 
 #export MANWIDTH=80
 
 if [ $UID -eq 0 ]; then
-        PATH=~root/bin:$PATH
+    PATH=~root/bin:$PATH
 else
-        export PATH="${HOME}/bin:${PATH}"
+    export PATH="${HOME}/bin:${PATH}"
 fi
 
 PATH="$PATH:/bin:/usr/bin:/usr/local/bin"

@@ -5,5 +5,10 @@ autoload zmv
 alias du="du -hcs"
 alias df="df -h"
 
-alias ls="ls --color=auto"
+if which dircolors
+then
+    alias ls="ls --color=auto"
+else
+    alias ls="ls -G"
+fi
 

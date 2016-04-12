@@ -1,7 +1,8 @@
 #!/bin/zsh
 
-if test -x =dircolors; then
+if which dircolors; then
     eval "`dircolors`"
+    
     export LS_COLORS="*.ogm=01;35:${LS_COLORS}"
     export ZLS_COLORS=$LS_COLORS
 fi
@@ -21,8 +22,8 @@ setopt auto_continue        # send SIGCONT to jobs disowned
 setopt auto_list            # list choice on ambiguous command
 setopt auto_menu            # show menu for completion
 setopt no_autoname_dirs     # after foo=/absolute/path, ~foo may expand to
-                            # /absolute/path, but `%~' in prompt won't give
-                            # `~foo' until `~foo' has been used (rtfm closely)
+# /absolute/path, but `%~' in prompt won't give
+# `~foo' until `~foo' has been used (rtfm closely)
 setopt auto_param_keys      # remove trailing spaces after completion if needed
 setopt auto_param_slash     # add slash for directories
 setopt auto_pushd           # cd = pushd
@@ -185,4 +186,4 @@ SAVEHIST=10000              # maximum of history events to be save
 LOGCHECK=60
 watch=(notme)               # watch login/logout
 WORDCHARS="*?_-.[]~/&;!#$%^(){}<>"
-                            # part of word in line editor
+# part of word in line editor
