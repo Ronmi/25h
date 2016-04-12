@@ -11,7 +11,7 @@ zsh_get_git_info() {
     __ZSH_GIT_BRANCHCOUNT=
     __ZSH_GIT_CLEAN=
 
-    tmpfile=$(mktemp -t perper)
+    tmpfile=$(mktemp -t perperXXXXXXXX)
     git status --porcelain 2> /dev/null > "${tmpfile}"
     if [[ $? -eq 0 ]]
     then
