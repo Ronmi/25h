@@ -1,6 +1,8 @@
 #!/bin/zsh
 
-if which dircolors; then
+which dircolors > /dev/null 2>&1
+if [[ $? -eq 0 ]]
+then
     eval "`dircolors`"
     
     export LS_COLORS="*.ogm=01;35:${LS_COLORS}"

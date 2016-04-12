@@ -10,38 +10,43 @@ zsh_get_git_info() {
     __ZSH_GIT_BRANCH=
     __ZSH_GIT_BRANCHCOUNT=
     __ZSH_GIT_CLEAN=
-    
-    ref=$(git symbolic-ref HEAD 2> /dev/null)
-    if [[ $ref != "" ]]
+
+    tmpfile=$(mktemp -t perper)
+    git status --porcelain 2> /dev/null > "${tmpfile}"
+    if [[ $? -eq 0 ]]
     then
+	ref=$(git symbolic-ref HEAD 2> /dev/null) 
 	cnt=$(git branch 2> /dev/null | grep -c '.*')
 	__ZSH_GIT_BRANCH=$(echo "${ref#refs/heads/}")
 	__ZSH_GIT_BRANCHCOUNT=$cnt
 	
-	git status --porcelain 2> /dev/null > "${tmpfile}"
 	l=
-	if grep -E '^.M' "${tmpfile}" > /dev/null 2> /dev/null
+	grep -E '^.M' "${tmpfile}" > /dev/null 2> /dev/null
+	if [[ $? -eq 0 ]]
 	then
 	    l="M"
 	fi
 	
-	if grep -E '^\?\?' "${tmpfile}" > /dev/null 2> /dev/null
+	grep -E '^\?\?' "${tmpfile}" > /dev/null 2> /dev/null
+	if [[ $? -eq 0 ]]
 	then
 	    l="U${l}"
 	fi
 	
-	if grep -E '^(.U|U.|AA)' "${tmpfile}" > /dev/null 2> /dev/null
+	grep -E '^(.U|U.|AA)' "${tmpfile}" > /dev/null 2> /dev/null
+	if [[ $? -eq 0 ]]
 	then
 	    l="C${l}"
 	fi
 	
-	if grep -E '^[MADRC] ' "${tmpfile}" > /dev/null 2> /dev/null
+	grep -E '^[MADRC] ' "${tmpfile}" > /dev/null 2> /dev/null
+	if [[ $? -eq 0 ]]
 	then
 	    l="A${l}"
 	fi
 	__ZSH_GIT_CLEAN="${l}"
-	rm -f "${tmpfile}"
     fi
+    rm -f "${tmpfile}"
 }
 
 add-zsh-hook precmd zsh_get_git_info

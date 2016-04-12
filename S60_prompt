@@ -32,8 +32,8 @@ function prompt_swap()
 
 function {
     local l1 l2 nl gitb up bat sw
-    l1='╭'
-    l2='╰'
+    l1=''
+    l2=''
     gitb='$(prompt_get_git_branch)'
     bat='$(prompt_bat)'
     sw='$(prompt_swap)'
