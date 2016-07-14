@@ -120,7 +120,10 @@ setopt magic_equal_subst    # foo= is file expanded
 setopt no_mail_warning      # auto-explained
 setopt mark_dirs            # adds / on dirs in filename completion
 #setopt no_menu_complete     # don't show menu on ambiguous completion
-setopt monitor              # job control
+if [[ $TERM != "dumb" ]]
+then
+    setopt monitor              # job control
+fi
 setopt multios              # multi redirection allowed
 setopt nomatch              # print error on non matched patterns
 setopt notify               # notify immediately, not on next prompt
@@ -168,7 +171,10 @@ setopt transient_rprompt    # better for cut/paste
 #setopt verbose              #
 #setopt vi                   # use bindkeys
 setopt no_xtrace            # do not debug by default
-setopt zle                  # use zsh le
+if [[ $TERM != "dumb" ]]
+then
+    setopt zle                  # use zsh le
+fi
 
 is-at-least 4.3.0 && {
     unsetopt hist_save_by_copy
