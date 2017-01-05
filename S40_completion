@@ -51,4 +51,5 @@ zstyle ':completion:*' file-patterns \
 
 zstyle ':completion:*:*:vi(m|):*:*files' ignored-patterns '*?.(aux|dvi|ps|pdf|bbl|toc|lot|lof|o|cm?)'
 
-
+autoload bashcompinit
+bashcompinit
