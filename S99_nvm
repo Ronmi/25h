@@ -1,4 +1,3 @@
-if [[ -d $HOME/.nvm ]]
-then
-    source $HOME/.nvm/nvm.sh
-fi
+test -s $HOME/.nvm/nvm.sh && . ~/.nvm/nvm.sh
+
+test "X$NVM_DIR" = "X" || export NVM_DIR=$HOME/.nvm
