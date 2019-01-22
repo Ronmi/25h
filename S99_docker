@@ -1,0 +1,4 @@
+if [[ $WSL != "" ]]
+then
+    alias docker="docker.exe"
+fi

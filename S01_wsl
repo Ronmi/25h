@@ -1,0 +1,9 @@
+WSL=
+
+grep -i microsoft /proc/version > /dev/null 2>&1
+if [[ $? == 0 ]]
+then
+    WSL=1
+fi
+
+export WSL
