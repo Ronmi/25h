@@ -1,4 +1,69 @@
 if [[ $WSL != "" ]]
 then
-    alias docker="docker.exe"
+    which docker.exe > /dev/null 2>&1
+    if [[ $? == 0 ]]
+    then
+	# To use docker desktop in WSL, we need few more tools
+	#
+	# One thing is important:
+	#     As in windows 10 build 17xxx, windows binaries might not work properly
+	#     in WSL filesystem. You'll have to move npiprelay.exe to windows
+	#     filesystem, like /mnt/c/somewhare/.
+	#
+	# 1. npiperelay, golang and socat
+	#    These are used for "relay" windows named pipe to unix socket.
+	#    To install npiperelay and socat, just
+	#
+	#        sudo apt-get install -y socat
+	#        go get -d github.com/jstarks/npiperelay
+	#        GOOS=windows go build -o "$(go env GOPATH)/bin/npiperelay.exe" github.com/jstarks/npiperelay
+	#
+	#    Don't forget move npiperelay.exe to windows filesystem.
+	#
+	# 2. docker client for linux
+	#
+	#        sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+	#        curl  -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+	#        echo "deb https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+	#        sudo apt-get update && sudo apt-get install -y docker-ce-cli
+
+	function relay_docker {
+	    if test -S /var/run/docker.sock
+	    then
+		return
+	    fi
+
+	    which go >/dev/null 2>&1
+	    if [[ $? != 0 ]]
+	    then
+		echo "You have to install golang tools in ${HOME}/goroot..."
+		return
+	    fi
+	    
+	    which socat >/dev/null 2>&1
+	    if [[ $? != 0 ]]
+	    then
+		sudo apt-get update && sudo apt-get install -y socat && sudo apt-get clean
+	    fi
+	    
+	    if test ! -f "$(go env GOPATH)/src/github.com/jstarks/npiperelay/scripts/docker-relay"
+	    then
+		go get -d github.com/jstarks/npiperelay
+	    fi
+	    
+	    which npiperelay.exe >/dev/null 2>&1
+	    if [[ $? != 0 ]]
+	    then
+		echo 'You have to manually install npiperelay.exe'
+		echo "1. run following command to build the executable."
+		echo "2. move $(go env GOPATH)/bin/npiperelay.exe to windows filesystem. (/mnt/d for example)"
+		echo "3. sym-link it back to ${HOME}/bin/npiperelay.exe"
+		echo ''
+		echo "GOOS=windows go build -o '$(go env GOPATH)/bin/npoperelay.exe' github.com/jstarks/npiperelay"
+		return
+	    fi
+
+	    (sudo nohup env PATH="$PATH" bash "$(go env GOPATH)/src/github.com/jstarks/npiperelay/scripts/docker-relay" >/dev/null 2>&1 &)
+	}
+    fi
 fi
