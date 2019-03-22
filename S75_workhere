@@ -1,0 +1,16 @@
+function workhere {
+    # search for .work.fizsh
+    if [[ ! -f .work.fizsh ]]
+    then
+        echo "You have to prepare an init file (.work.fizsh) here!"
+        return 1
+    fi
+
+    export _RMI_WORK_HERE="$(pwd)"
+    exec fizsh -l
+}
+
+if [[ $_RMI_WORK_HERE != "" ]]
+then
+    source "${_RMI_WORK_HERE}/.work.fizsh"
+fi
