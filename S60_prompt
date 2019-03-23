@@ -34,10 +34,10 @@ function {
     local l1 l2 nl gitb up bat sw
     l1=''
     l2=''
-    cwdclr="$fg[red]"
+    workhere=''
     if [[ $_RMI_WORK_HERE != "" ]]
     then
-        cwdclr="$fg[cyan]"
+        workhere="$(basename "$_RMI_WORK_HERE")"
     fi
     gitb='$(prompt_get_git_branch)'
     bat='$(prompt_bat)'
@@ -46,7 +46,7 @@ function {
     up=$'%{\e[T%}'
     PROMPT="\
 $up$bgc%{${l1}%}\
-%{$fg[white][$cwdclr%B%~%b$fg[white]]%}$rst\
+%{$fg[cyan]$workhere$fg[white][$fg[red]%B%~%b$fg[white]]%}$rst\
 $gitb$rst\
 %{-$fg[white][$fg[red]%*$fg[white]]%}$rst\
 $nl$bgc${l2}\
