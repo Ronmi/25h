@@ -2,3 +2,11 @@ export GOPATH=$HOME/go
 #export GOROOT=$HOME/goroot
 
 export PATH=$HOME/goroot/bin:$GOPATH/bin:$PATH
+
+if [[ -d "${HOME}/golang" ]]
+then
+    for i in $(find ~/golang -mindepth 1 -maxdepth 1 -type d -exec basename {} ';')
+    do
+        alias "go${i}"="${HOME}/golang/${i}/bin/go"
+    done
+fi
