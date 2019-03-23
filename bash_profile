@@ -1,4 +1,5 @@
 . $HOME/.zsh.d/S99_go
+. $HOME/.zsh.d/S99_rust
 . $HOME/.zsh.d/S99_nvm
 . $HOME/.zsh.d/S99_java
 . $HOME/.zsh.d/S99_composer
