@@ -57,7 +57,7 @@ then
 	    if [[ $? != 0 ]]
 	    then
 		echo 'You have to manually install npiperelay.exe'
-		echo "1. run following command to build the executable."
+		echo "1. install golang and run following command to build the executable."
 		echo "2. move $(go env GOPATH)/bin/npiperelay.exe to windows filesystem. (/mnt/d for example)"
 		echo "3. sym-link it back to ${HOME}/bin/npiperelay.exe"
 		echo ''
