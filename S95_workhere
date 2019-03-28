@@ -1,6 +1,11 @@
 #!/usr/bin/zsh -f
 
-if [[ $_RMI_WORK_HERE != "" ]]
+# [experimental] Separated project environment
+#
+# 1. create a directory '.rmi-work' to hold history and custom settings
+# 2. use 'workhere' or 'workin' to switch environment
+
+if [[ $_RMI_WORK_HERE != "" && -d "${_RMI_WORK_HERE}/.rmi-work" ]]
 then
     # set history file
     f="${_RMI_WORK_HERE}/.rmi-work/history"
@@ -12,17 +17,20 @@ then
     unset f
 
     # initialize
-    source "${_RMI_WORK_HERE}/.rmi-work/conf.zsh"
+    if [[ -f "${_RMI_WORK_HERE}/.rmi-work/conf.zsh" ]]
+    then
+        source "${_RMI_WORK_HERE}/.rmi-work/conf.zsh"
+    fi
 
     function backroot {
         cd "$_RMI_WORK_HERE"
     }
 else
     function workhere {
-        # search for .work.fizsh
-        if [[ ! -d .rmi-work || ! -f .rmi-work/conf.zsh ]]
+        # search for .rmi-work
+        if [[ ! -d .rmi-work ]]
         then
-            echo "You have to prepare an init file (.rmi-work/conf.zsh) here!"
+            echo "You have to 'mkdir -p .rmi-work' first!"
             return 1
         fi
 
@@ -34,9 +42,9 @@ else
 
     function workin {
         conf="$1/.rmi-work"
-        if [[ ! -d "$conf" || ! -f "${conf}/conf.zsh" ]]
+        if [[ ! -d "$conf" ]]
         then
-            echo "You have to prepare an init file (${conf}/conf.zsh) here!"
+            echo "You have to 'mkdir -p ${conf}' first!"
             return 1
         fi
 
