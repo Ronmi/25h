@@ -41,7 +41,7 @@ else
         export _RMI_WORK_HERE="$(pwd)"
         unset -f workhere
         unset -f workin
-        exec fizsh -l
+        exec "$SHELL" -l
     }
 
     function workin {
