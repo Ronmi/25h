@@ -4,6 +4,10 @@
 #
 # 1. create a directory '.rmi-work' to hold history and custom settings
 # 2. use 'workhere' or 'workin' to switch environment
+#
+# You may create a 'conf.zsh' file in '.rmi-work' to setup the environment.
+#
+# See lib/*.sh for some *maybe* useful helpers.
 
 if [[ $_RMI_WORK_HERE != "" && -d "${_RMI_WORK_HERE}/.rmi-work" ]]
 then
