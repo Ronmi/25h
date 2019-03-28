@@ -1,0 +1,44 @@
+if [[ $_RMI_WORK_HERE != "" ]]
+then
+    # set history file
+    f="${_RMI_WORK_HERE}/.rmi-work/history"
+    if [[ ! -f "$f" ]]
+    then
+        cp "$HISTFILE" "$f"
+    fi
+    export HISTFILE="$f"
+    unset f
+
+    # initialize
+    source "${_RMI_WORK_HERE}/.rmi-work/conf.zsh"
+
+    function backroot {
+        cd "$_RMI_WORK_HERE"
+    }
+else
+    function workhere {
+        # search for .work.fizsh
+        if [[ ! -d .rmi-work || ! -f .rmi-work/conf.zsh ]]
+        then
+            echo "You have to prepare an init file (.rmi-work/conf.zsh) here!"
+            return 1
+        fi
+
+        export _RMI_WORK_HERE="$(pwd)"
+        unset -f workhere
+        unset -f workin
+        exec fizsh -l
+    }
+
+    function workin {
+        conf="$1/.rmi-work"
+        if [[ ! -d "$conf" || ! -f "${conf}/conf.zsh" ]]
+        then
+            echo "You have to prepare an init file (${conf}/conf.zsh) here!"
+            return 1
+        fi
+
+        cd "$1"
+        workhere
+    }
+fi
