@@ -3,7 +3,7 @@
 
 my zsh configuration (mainly with fizsh)
 
-## Usage (with fizsh)
+## Usage
 
 ```sh
 # clone it
@@ -11,6 +11,8 @@ git clone https://github.com/Ronmi/25h "${HOME}/.zsh.d"
 
 # update fizsh config
 echo 'source "${HOME}/.zsh.d/zshrc"' >> "${HOME}/.fizsh/.zshrc"
+# or with zsh
+ln -sf "${HOME}/.zsh.d/zshrc" "${HOME}/.zshrc"
 
 # done, open a new terminal or re-login to enable
 ```
