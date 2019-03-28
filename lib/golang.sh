@@ -1,4 +1,4 @@
-#!/usr/bin/fizsh
+#!/usr/bin/zsh -f
 
 function dc_go_init {
     cat <<EOF > ./docker-compose.yml
@@ -26,7 +26,7 @@ EOF
 }
 
 # download/update useful tools for developing software with go
-function go_tools {
+function dl_go_tools {
     go get -u github.com/stamblerre/gocode
     go get -u golang.org/x/tools/cmd/...
 }
