@@ -1,5 +1,18 @@
 #!/usr/bin/zsh -f
 
+# go environment
+#
+# DEFAULT VALUES
+#
+# GOPATH: $HOME/go
+# GOROOT: $HOME/goroot
+#
+# MULTIPLE GO VERSION
+#
+# Put different version in $HOME/golang/name like $HOME/golang/1.9, $HOME/golang/tip
+#
+# You can use different verion by go1.9/gotip
+
 export GOPATH=$HOME/go
 #export GOROOT=$HOME/goroot
 
