@@ -1,4 +1,5 @@
-#!/bin/zsh
+#!/usr/bin/zsh -f
+
 compinit -D
 zstyle ':completion:*' add-space true
 zstyle ':completion:*' completer _expand _complete _match _prefix _approximate _list

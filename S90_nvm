@@ -1,3 +1,5 @@
+#!/usr/bin/zsh -f
+
 test -s $HOME/.nvm/nvm.sh && . ~/.nvm/nvm.sh
 
 test "X$NVM_DIR" = "X" || export NVM_DIR=$HOME/.nvm

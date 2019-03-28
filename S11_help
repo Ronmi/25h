@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/zsh -f
 
 ### Aliasing "run-help"
 #unalias run-help

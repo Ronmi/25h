@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/zsh -f
 
 __ZSH_GIT_BRANCH=
 __ZSH_GIT_BRANCHCOUNT=

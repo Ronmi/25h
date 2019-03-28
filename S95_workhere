@@ -1,3 +1,5 @@
+#!/usr/bin/zsh -f
+
 if [[ $_RMI_WORK_HERE != "" ]]
 then
     # set history file

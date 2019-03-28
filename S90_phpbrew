@@ -1,1 +1,3 @@
+#!/usr/bin/zsh -f
+
 test -s $HOME/.phpbrew/bashrc && . ~/.phpbrew/bashrc

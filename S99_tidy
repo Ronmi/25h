@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/zsh -f
 
 # this removes duplicates from PATH, CDPATH, MANPATH, and FPATH
 typeset -U path manpath fpath

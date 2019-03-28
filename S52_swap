@@ -1,4 +1,5 @@
-#!/bin/zsh -f
+#!/usr/bin/zsh -f
+
 ZSH_PROMPT_SWAP_USED=
 ZSH_PROMPT_MEMORY_FREE=
 

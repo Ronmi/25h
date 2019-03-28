@@ -1,3 +1,5 @@
+#!/usr/bin/zsh -f
+
 case "$TERM" in
   xterm*|rxvt*)
     preexec () {

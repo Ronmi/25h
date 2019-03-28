@@ -1,3 +1,5 @@
+#!/usr/bin/zsh -f
+
 # use bash in emacs
 
 fpath+="$HOME/.zsh.d/completion"

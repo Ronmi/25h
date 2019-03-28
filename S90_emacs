@@ -1,3 +1,5 @@
+#!/usr/bin/zsh -f
+
 if [[ "x$EMACS" != "x" || $TERM == "dumb" ]]
 then
   unsetopt zle

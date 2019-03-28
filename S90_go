@@ -1,3 +1,5 @@
+#!/usr/bin/zsh -f
+
 export GOPATH=$HOME/go
 #export GOROOT=$HOME/goroot
 
