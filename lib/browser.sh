@@ -2,14 +2,14 @@
 
 function firefox {
     _fx=${FIREFOX_PATH:-/usr/bin/firefox}
-    p="${_RMI_WORK_HERE}/.rmi_work/firefox"
+    p="${_RMI_WORK_HERE}/.rmi-work/firefox"
     mkdir -p "$p"
     "$_fx" --profile "$p" "$@"
 }
 
 function google-chrome {
     _ch=${CHROME_PATH:-/usr/bin/google-chrome}
-    p="${_RMI_WORK_HERE}/.rmi_work/firefox"
+    p="${_RMI_WORK_HERE}/.rmi-work/firefox"
     mkdir -p "$p"
     "$_ch" --user-data-dir "$p" "$@"
 }
