@@ -31,6 +31,12 @@ then
     }
 else
     function workhere {
+        if [[ $1 == '-f' ]]
+        then
+            mkdir -p .rmi-work
+            touch .rmi-work/conf.zsh
+        fi
+
         # search for .rmi-work
         if [[ ! -d .rmi-work ]]
         then
