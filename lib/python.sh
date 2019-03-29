@@ -6,7 +6,7 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 # activate (and setup if needed) virtualenv in "${_RMI_WORK_HERE}/.rmi-work/pyvenv"
 # all arguments are passed to virtualenv
 function pyve {
-    ve="${_RMI_WORK_HERE}/.rmi-work/pyvenv"
+    ve="${_RMI_WORK_DIR}/pyvenv"
     if [[ ! -f "${ve}/bin/activate" ]]
     then
         virtualenv "$@" "$ve"

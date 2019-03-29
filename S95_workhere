@@ -21,6 +21,7 @@ then
     unset f
 
     # initialize
+    export _RMI_WORK_DIR="${_RMI_WORK_HERE}/.rmi-work"
     if [[ -f "${_RMI_WORK_HERE}/.rmi-work/conf.zsh" ]]
     then
         source "${_RMI_WORK_HERE}/.rmi-work/conf.zsh"
