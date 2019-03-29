@@ -30,3 +30,12 @@ function dl_go_tools {
     go get -u github.com/stamblerre/gocode
     go get -u golang.org/x/tools/cmd/...
 }
+
+function separated_gopath {
+    export GOPATH="${_RMI_WORK_HERE}/.rmi-work/gopath"
+    mkdir -p "$GOPATH"
+}
+
+function default_go_ver {
+    alias go="${HOME}/golang/${1}/bin/go"
+}
