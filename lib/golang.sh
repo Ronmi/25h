@@ -36,6 +36,11 @@ function separated_gopath {
     mkdir -p "$GOPATH"
 }
 
+function separated_gocache {
+    export GOCACHE="${_RMI_WORK_HERE}/.rmi-work/gocache"
+    mkdir -p "$GOCACHE"
+}
+
 function default_go_ver {
     alias go="${HOME}/golang/${1}/bin/go"
 }
