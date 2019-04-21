@@ -1,3 +1,8 @@
 #!/usr/bin/zsh -f
 
-test -s $HOME/.phpbrew/bashrc && . ~/.phpbrew/bashrc
+if [[ $PHPBREW_DIR == "" ]]
+then
+    export PHPBREW_DIR="${HOME}/.phpbrew"
+fi
+
+test -s "${PHPBREW_DIR}/bashrc" && . "${PHPBREW_DIR}/bashrc"

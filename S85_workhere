@@ -7,6 +7,9 @@
 #
 # You may create a 'conf.zsh' file in '.rmi-work' to setup the environment.
 #
+# If you need to run setup script after lang-settings (S90), write a function named
+# 'post_workhere'. See S95_workhere_postsetup.
+#
 # See lib/*.sh for some *maybe* useful helpers.
 
 if [[ $_RMI_WORK_HERE != "" && -d "${_RMI_WORK_HERE}/.rmi-work" ]]

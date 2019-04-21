@@ -1,0 +1,10 @@
+#!/usr/bin/zsh -f
+
+if [[ -f "${_RMI_WORK_HERE}/.rmi-work/conf.zsh"]]
+then
+    whence -w post_workhere > /dev/null 2>&1
+    if [[ $? == 0 ]]
+    then
+        post_workhere
+    fi
+fi

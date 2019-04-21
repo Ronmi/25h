@@ -13,8 +13,10 @@
 #
 # You can use different verion by go1.9/gotip
 
-export GOPATH=$HOME/go
-#export GOROOT=$HOME/goroot
+if [[ $GOPATH == "" ]]
+then
+    export GOPATH=$HOME/go
+fi
 
 export PATH=$HOME/goroot/bin:$GOPATH/bin:$PATH
 
