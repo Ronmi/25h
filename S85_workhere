@@ -33,6 +33,17 @@ then
     function backroot {
         cd "$_RMI_WORK_HERE"
     }
+
+    function reload_workhere {
+        unset -f post_workhere > /dev/null 2>&1
+
+        source "${_RMI_WORK_HERE}/.rmi-work/conf.zsh"
+        whence -w post_workhere > /dev/null 2>&1
+        if [[ $? == 0 ]]
+        then
+            post_workhere
+        fi
+    }
 else
     function workhere {
         if [[ $1 == '-f' ]]
