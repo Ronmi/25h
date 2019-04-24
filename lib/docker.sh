@@ -1,6 +1,6 @@
 #!/usr/bin/zsh -f
 
-grep docker /etc/group|grep "$(id -un)" > /dev/null 2>&1
+id -Gn | grep docker > /dev/null 2>&1
 if [[ $? == 0 ]]
 then
     alias d=docker
