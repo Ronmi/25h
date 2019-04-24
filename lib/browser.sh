@@ -27,6 +27,10 @@ function reset_firefox {
     mkdir -p "${_RMI_WORK_DIR}/firefox"
     cat <<EOF > "${_RMI_WORK_DIR}/firefox/user.js"
 user_pref("browser.tabs.closeWindowWithLastTab", false);
+user_pref("browser.shell.checkDefaultBrowser", false);
+user_pref("browser.shell.skipDefaultBrowserCheckOnFirstRun", true);
+user_pref("browser.shell.didSkipDefaultBrowserCheckOnFirstRun", true);
+user_pref("app.update.auto", false);
 EOF
 
     test_func reset_firefox_hook && reset_firefox_hook
