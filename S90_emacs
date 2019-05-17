@@ -1,10 +1,12 @@
 #!/usr/bin/zsh -f
 
-if [[ "x$EMACS" != "x" || $TERM == "dumb" ]]
+if [[ $TERM == "dumb" ]]
 then
   unsetopt zle
   unsetopt prompt_cr
   unsetopt prompt_subst
+  PROMPT='$ '
+  RPROMPT=''
   PS1='$ '
 fi
 

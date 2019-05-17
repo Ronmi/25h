@@ -57,7 +57,10 @@ $nl$bgc${l2}\
 
 function prompt_nl(){echo " ";echo ""}
 
-add-zsh-hook precmd prompt_nl
+if [[ $TERM != "dumb" ]]
+then
+    add-zsh-hook precmd prompt_nl
+fi
 
 unset bgc rst
 
