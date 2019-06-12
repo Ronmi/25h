@@ -76,11 +76,12 @@ then
         exit $err
     fi
 
-    if [[ ! -L /usr/local/bin/composer ]]
-    then
-        ln -sf "${home}/composer.phar" /usr/local/bin/composer
-    fi
     echo "done"
+fi
+
+if [[ ! -L /usr/local/bin/composer ]]
+then
+    ln -sf "${home}/composer.phar" /usr/local/bin/composer
 fi
 
 exec su -s /bin/bash - "$uid"
