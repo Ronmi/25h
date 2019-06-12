@@ -76,7 +76,10 @@ then
         exit $err
     fi
 
-    ln -sf "${home}/composer.phar" /usr/local/bin/composer
+    if [[ ! -L /usr/local/bin/composer ]]
+    then
+        ln -sf "${home}/composer.phar" /usr/local/bin/composer
+    fi
     echo "done"
 fi
 
