@@ -35,7 +35,7 @@ function phpindocker {
     if [[ ! -f "${_RMI_WORK_DIR}/php/img/Dockerfile" ]]
     then
         echo "FROM php:${ver}" > "${_RMI_WORK_DIR}/php/img/Dockerfile"
-        echo 'RUN apt-get update && apt-get install -y --no-install-recommends git unzip && apt-get clean -y && rm -fr /var/lib/apt/lists/*' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+        echo 'RUN apt-get update && apt-get install -y --no-install-recommends git unzip less wget && apt-get clean -y && rm -fr /var/lib/apt/lists/*' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
         echo "RUN echo \"export $(dircolors -b|head -n 1)\" > /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
         echo "RUN echo \"alias ls='/bin/ls --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
         echo "RUN echo \"alias grep='/bin/grep --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
