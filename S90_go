@@ -13,7 +13,7 @@
 #
 # You can use different verion by go1.9/gotip
 
-if [[ ! -v GOPATH || -z $GOPATH ]]
+if [[ -z $GOPATH ]]
 then
     typeset -x GOPATH="${HOME}/go"
 fi
