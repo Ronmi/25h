@@ -23,11 +23,16 @@
 #
 #   You can create '/PATH_TO_YOUR_PROJECT/.rmi-work/php/home/boot-hook.sh' to
 #   install custom package/extension.
+#
+#   You can set default image tag by adding 'export DEFAULT_PHP_VERSION=5.6-cli'
+#   in 'conf.zsh'.
 
 loadlib docker
 
+export DEFAULT_PHPINDOCKER_VERSION=cli
+
 function phpindocker {
-    ver="${1:-cli}"
+    ver="${1:-${DEFAULT_PHPINDOCKER_VERSION}}"
     mkdir -p "${_RMI_WORK_DIR}/php/home"
     mkdir -p "${_RMI_WORK_DIR}/php/img"
 
