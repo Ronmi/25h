@@ -31,21 +31,25 @@ loadlib docker
 
 export DEFAULT_PHPINDOCKER_VERSION=cli
 
+function _phpindocker_gen_dockerfile {
+    ver="${1:-${DEFAULT_PHPINDOCKER_VERSION}}"
+    echo "FROM php:${ver}" > "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo "RUN sed -i 's#//httpredir#//deb#' /etc/apt/sources.list" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo "RUN sed -i '/jessie-updates/s/^/# /' /etc/apt/sources.list" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo 'RUN apt-get update && apt-get install -y --no-install-recommends git unzip less wget zsh && apt-get clean -y && rm -fr /var/lib/apt/lists/*' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo "RUN echo \"export $(dircolors -b|head -n 1)\" > /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo "RUN echo \"alias ls='/bin/ls --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo "RUN echo \"alias grep='/bin/grep --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo 'COPY boot.sh /usr/local/bin' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+}
+
 function phpindocker {
     ver="${1:-${DEFAULT_PHPINDOCKER_VERSION}}"
     mkdir -p "${_RMI_WORK_DIR}/php/home"
     mkdir -p "${_RMI_WORK_DIR}/php/img"
 
     # prepare dockerfile
-    if [[ ! -f "${_RMI_WORK_DIR}/php/img/Dockerfile" ]]
-    then
-        echo "FROM php:${ver}" > "${_RMI_WORK_DIR}/php/img/Dockerfile"
-        echo 'RUN apt-get update && apt-get install -y --no-install-recommends git unzip less wget && apt-get clean -y && rm -fr /var/lib/apt/lists/*' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
-        echo "RUN echo \"export $(dircolors -b|head -n 1)\" > /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
-        echo "RUN echo \"alias ls='/bin/ls --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
-        echo "RUN echo \"alias grep='/bin/grep --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
-        echo 'COPY boot.sh /usr/local/bin' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
-    fi
+    _phpindocker_gen_dockerfile "$ver"
 
     # prepare boot script
     echo '#!/bin/bash
@@ -89,7 +93,7 @@ then
     ln -sf "${home}/composer.phar" /usr/local/bin/composer
 fi
 
-exec su -s /bin/bash - "$uid"
+exec su -s /usr/bin/zsh - "$uid"
 ' > "${_RMI_WORK_DIR}/php/img/boot.sh"
     chmod a+x "${_RMI_WORK_DIR}/php/img/boot.sh"
 
@@ -124,6 +128,8 @@ exec su -s /bin/bash - "$uid"
            -v /etc/shadow:/etc/shadow:ro \
            -v "${_RMI_WORK_DIR}/php/home:${HOME}" \
            -v "${_RMI_WORK_HERE}:${HOME}/app" \
+           -v "${HOME}/.zsh.d:${HOME}/.zsh.d:ro" \
+           -v "${HOME}/.zsh.d/zshrc:${HOME}/.zshrc:ro" \
            --workdir "${HOME}/app" \
            "phpenv:${ver}" \
            "/usr/local/bin/boot.sh"
