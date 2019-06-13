@@ -66,14 +66,21 @@ else
     }
 
     function workin {
+        dir="$1"
         conf="$1/.rmi-work"
         if [[ ! -d "$conf" ]]
         then
-            echo "You have to 'mkdir -p ${conf}' first!"
-            return 1
+            # also try ~/...
+            if [[ ! -d "${HOME}/${conf}" ]]
+            then
+                echo "You have to 'mkdir -p ${conf}' first!"
+                return 1
+            else
+                dir="${HOME}/${1}"
+            fi
         fi
 
-        cd "$1"
+        cd "$dir"
         workhere
     }
 fi
