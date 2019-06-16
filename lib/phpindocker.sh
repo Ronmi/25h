@@ -60,8 +60,11 @@ function _phpindocker_gen_dockerfile {
     echo 'COPY boot.sh /usr/local/bin' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
 
     # run init script
-    echo 'COPY init-hook.sh /usr/local/bin' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
-    echo 'RUN /usr/local/bin/init-hook.sh' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    if [[ -f "${_RMI_WORK_DIR}/php/img/init-hook.sh" ]]
+    then
+        echo 'COPY init-hook.sh /usr/local/bin' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+        echo 'RUN /usr/local/bin/init-hook.sh' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    fi
 }
 
 function phpindocker {
