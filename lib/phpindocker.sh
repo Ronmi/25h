@@ -21,8 +21,15 @@
 #
 # CUSTOMIZE
 #
+#   You can create '/PATH_TO_YOUR_PROJECT/.rmi-work/php/img/init-hook.sh' to
+#   install custom package/extension in the image. There's a helper for it:
+#
+#       pind_init vi # equals: vi "${_RMI_WORK_DIR}/php/img/init-hook.sh"
+#
 #   You can create '/PATH_TO_YOUR_PROJECT/.rmi-work/php/home/boot-hook.sh' to
-#   install custom package/extension.
+#   install custom package/extension at runtime. There's a helper for it:
+#
+#       pind_boot vi # equals: vi "${_RMI_WORK_DIR}/php/home/boot-hook.sh"
 #
 #   You can set default image tag by adding 'export DEFAULT_PHP_VERSION=5.6-cli'
 #   in 'conf.zsh'.
@@ -30,6 +37,16 @@
 loadlib docker
 
 export DEFAULT_PHPINDOCKER_VERSION=cli
+
+function pind_init {
+    touch "${_RMI_WORK_DIR}/php/img/init-hook.sh"
+    "$1" "${_RMI_WORK_DIR}/php/img/init-hook.sh"
+}
+
+function pind_boot {
+    touch "${_RMI_WORK_DIR}/php/home/boot-hook.sh"
+    "$1" "${_RMI_WORK_DIR}/php/home/boot-hook.sh"
+}
 
 function _phpindocker_gen_dockerfile {
     ver="${1:-${DEFAULT_PHPINDOCKER_VERSION}}"
@@ -41,6 +58,10 @@ function _phpindocker_gen_dockerfile {
     echo "RUN echo \"alias ls='/bin/ls --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
     echo "RUN echo \"alias grep='/bin/grep --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
     echo 'COPY boot.sh /usr/local/bin' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+
+    # run init script
+    echo 'COPY init-hook.sh /usr/local/bin' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo 'RUN /usr/local/bin/init-hook.sh' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
 }
 
 function phpindocker {
@@ -98,8 +119,9 @@ exec su -s /usr/bin/zsh - "$uid"
     chmod a+x "${_RMI_WORK_DIR}/php/img/boot.sh"
 
     # build image
+    suffix=$(basename "$_RMI_WORK_HERE")
     echo -n 'build runtime image... '
-    d build -t "phpenv:${ver}" "${_RMI_WORK_DIR}/php/img" > /dev/null 2>&1
+    d build -t "${suffix}_phpenv:${ver}" "${_RMI_WORK_DIR}/php/img" > /dev/null 2>&1
     if [[ $? != 0 ]]
     then
         echo "cannot prepare php runtime"
