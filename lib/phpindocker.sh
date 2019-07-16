@@ -117,7 +117,7 @@ then
     ln -sf "${home}/composer.phar" /usr/local/bin/composer
 fi
 
-exec su -s /usr/bin/zsh - "$uid"
+su -s /usr/bin/zsh - "$uid"
 ' > "${_RMI_WORK_DIR}/php/img/boot.sh"
     chmod a+x "${_RMI_WORK_DIR}/php/img/boot.sh"
 
@@ -156,6 +156,6 @@ exec su -s /usr/bin/zsh - "$uid"
            -v "${HOME}/.zsh.d:${HOME}/.zsh.d:ro" \
            -v "${HOME}/.zsh.d/zshrc:${HOME}/.zshrc:ro" \
            --workdir "${HOME}/app" \
-           "phpenv:${ver}" \
+           "${suffix}_phpenv:${ver}" \
            "/usr/local/bin/boot.sh"
 }
