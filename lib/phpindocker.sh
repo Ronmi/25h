@@ -50,13 +50,15 @@ function pind_boot {
 
 function _phpindocker_gen_dockerfile {
     ver="${1:-${DEFAULT_PHPINDOCKER_VERSION}}"
+    uid="$(id -un)"
     echo "FROM php:${ver}" > "${_RMI_WORK_DIR}/php/img/Dockerfile"
     echo "RUN sed -i 's#//httpredir#//deb#' /etc/apt/sources.list" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
     echo "RUN sed -i '/jessie-updates/s/^/# /' /etc/apt/sources.list" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
-    echo 'RUN apt-get update && apt-get install -y --no-install-recommends git unzip less wget zsh && apt-get clean -y && rm -fr /var/lib/apt/lists/*' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo 'RUN apt-get update && apt-get install -y --no-install-recommends sudo git unzip less wget zsh && apt-get clean -y && rm -fr /var/lib/apt/lists/*' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
     echo "RUN echo \"export $(dircolors -b|head -n 1)\" > /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
     echo "RUN echo \"alias ls='/bin/ls --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
     echo "RUN echo \"alias grep='/bin/grep --color=auto'\" >> /etc/profile.d/ls-color.sh" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
+    echo "RUN echo \"${uid} ALL=(ALL:ALL) NOPASSWD:ALL\" >> /etc/sudoers.d/${uid}" >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
     echo 'COPY boot.sh /usr/local/bin' >> "${_RMI_WORK_DIR}/php/img/Dockerfile"
 
     # run init script
