@@ -39,13 +39,17 @@ loadlib docker
 export DEFAULT_PHPINDOCKER_VERSION=cli
 
 function pind_init {
+    mkdir -p "${_RMI_WORK_DIR}/php/img"
     touch "${_RMI_WORK_DIR}/php/img/init-hook.sh"
     "$1" "${_RMI_WORK_DIR}/php/img/init-hook.sh"
+    chmod a+x "${_RMI_WORK_DIR}/php/img/init-hook.sh"
 }
 
 function pind_boot {
+    mkdir -p "${_RMI_WORK_DIR}/php/home"
     touch "${_RMI_WORK_DIR}/php/home/boot-hook.sh"
     "$1" "${_RMI_WORK_DIR}/php/home/boot-hook.sh"
+    chmod a+x "${_RMI_WORK_DIR}/php/home/boot-hook.sh"
 }
 
 function _phpindocker_gen_dockerfile {
