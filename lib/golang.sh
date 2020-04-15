@@ -33,6 +33,11 @@ function dl_go_tools {
 
 function separated_gopath {
     export GOPATH="${_RMI_WORK_HERE}/.rmi-work/gopath"
+    echo "$PATH" | grep -F "${GOPATH}:" > /dev/null 2>&1
+    if [[ $? -ne 0 ]]
+    then
+        export PATH="${GOPATH}:${PATH}"
+    fi
     mkdir -p "$GOPATH"
 }
 
