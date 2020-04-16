@@ -23,6 +23,13 @@ then
     export HISTFILE="$f"
     unset f
 
+    if [[ ! -f "${_RMI_WORK_HERE}/.rmi-work/.gitignore" ]]
+    then
+        echo '*' > "${_RMI_WORK_HERE}/.rmi-work/.gitignore"
+        echo '!conf.zsh' >> "${_RMI_WORK_HERE}/.rmi-work/.gitignore"
+        echo '!.gitignore' >> "${_RMI_WORK_HERE}/.rmi-work/.gitignore"
+    fi
+
     # initialize
     export _RMI_WORK_DIR="${_RMI_WORK_HERE}/.rmi-work"
     if [[ -f "${_RMI_WORK_HERE}/.rmi-work/conf.zsh" ]]
