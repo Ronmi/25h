@@ -34,7 +34,10 @@ then
     export _RMI_WORK_DIR="${_RMI_WORK_HERE}/.rmi-work"
     if [[ -f "${_RMI_WORK_HERE}/.rmi-work/conf.zsh" ]]
     then
+        _old_report_time="$REPORTTIME"
+        REPORTTIME=-1
         source "${_RMI_WORK_HERE}/.rmi-work/conf.zsh"
+        REPORTTIME="$_old_report_time"
     fi
 
     function backroot {

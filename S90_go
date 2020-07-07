@@ -18,7 +18,11 @@ then
     typeset -x GOPATH="${HOME}/go"
 fi
 
-export PATH="${HOME}/goroot/bin:${GOPATH}/bin:${PATH}"
+which go > /dev/null 2>&1
+if [[ $? -ne 0 ]]
+then
+   export PATH="${HOME}/goroot/bin:${GOPATH}/bin:${PATH}"
+fi
 
 if [[ -d "${HOME}/golang" ]]
 then

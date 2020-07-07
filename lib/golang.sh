@@ -1,5 +1,8 @@
 #!/usr/bin/zsh -f
 
+loadlib _lib
+__my_gobase="${_RMI_WORK_DIR}/golang"
+
 function dc_go_init {
     cat <<EOF > ./docker-compose.yml
 version: "3"
@@ -31,19 +34,72 @@ function dl_go_tools {
     go get -u golang.org/x/tools/cmd/...
 }
 
-function separated_gopath {
-    export GOPATH="${_RMI_WORK_HERE}/.rmi-work/gopath"
-    echo "$PATH" | grep -F "${GOPATH}:" > /dev/null 2>&1
-    if [[ $? -ne 0 ]]
+function _dl_go_build_tools {
+    tgz="https://golang.org/dl/go${1}.linux-amd64.tar.gz"
+    _log_action "Getting latest golang build tools"
+    wget -q -O - "$tgz" | tar zxf - -C "$__my_gobase" >/dev/null 2>&1
+    _log_result $?
+}
+
+function _dl_go_latest {
+    _log_action "Detecting latest golang version"
+    tgz="$(wget -q -O - https://golang.org/dl/ | grep -oE 'go[0-9]\.[0-9]+\.[0-9]+\.linux-amd64\.tar\.gz' | head -n 1)"
+    ver="$(echo "$tgz"|grep -oE '[0-9]\.[0-9]+\.[0-9]+')"
+    if [[ $ver == "" ]]
     then
-        export PATH="${GOPATH}:${PATH}"
+        echo failed.
+        return
     fi
-    mkdir -p "$GOPATH"
+    echo "$ver"
+
+    _dl_go_build_tools "$ver"
+}
+
+function dl_goruntime {
+    if [[ -d "${__my_gobase}/go" ]]
+    then
+        return
+    fi
+
+    if [[ $1 == "" ]]
+    then
+        _dl_go_latest
+        return
+    fi
+
+    _dl_go_build_tools "$1"
+}
+
+function _prepare_goenv {
+    export GOENV="${__my_gobase}/envfile"
+    mkdir -p "$(dirname "$GOENV")"
+    _prepare_file "$GOENV"
+}
+
+function set_goenv {
+    _prepare_goenv
+    _append_if_non_exist "$GOENV" "$1" "${1}=${2}"
+}
+
+function separated_gopath {
+    _prepare_goenv
+    dest="${__my_gobase}/gopath"
+    mkdir -p "$dest"
+    set_goenv GOPATH "$dest"
+    export GOPATH="$dest"
+    export PATH="${dest}/bin:${PATH}"
 }
 
 function separated_gocache {
-    export GOCACHE="${_RMI_WORK_HERE}/.rmi-work/gocache"
-    mkdir -p "$GOCACHE"
+    dest="${__my_gobase}/gocache"
+    mkdir -p "$dest"
+    set_goenv GOCACHE "$dest"
+}
+
+function separated_goruntime {
+    _prepare_goenv
+    dl_goruntime "$1"
+    export PATH="${__my_gobase}/go/bin:${PATH}"
 }
 
 function default_go_ver {
