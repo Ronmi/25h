@@ -93,4 +93,10 @@ else
         cd "$dir"
         workhere
     }
+
+    function tmpwork {
+        dir="$(mktemp -d)"
+        cd "$dir"
+        workhere -f
+    }
 fi
