@@ -53,7 +53,7 @@ function google-chrome {
     then
         reset_chrome
     fi
-    "$_ch" --user-data-dir "$p" "$@"
+    "$_ch" --user-data-dir="$p" "$@"
 }
 
 function chrome {
