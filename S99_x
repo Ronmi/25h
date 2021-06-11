@@ -1,0 +1,14 @@
+#!/usr/bin/zsh -f
+
+which xclip > /dev/null 2>&1
+if [[ $? == 0 ]]
+then
+  alias copy="xclip -selection clipboard"
+else
+  which xsel > /dev/null 2>&1
+  if [[ $? == 0 ]]
+  then
+    alias copy="xsel -i -b"
+  fi
+fi
+
