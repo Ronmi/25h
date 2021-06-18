@@ -12,3 +12,11 @@ else
   fi
 fi
 
+# use gui prompt for gui environment
+if [[ _is_gui ]]
+then
+    export SUDO_ASKPASS=/usr/bin/ssh-askpass
+    alias sudo='/usr/bin/sudo -A'
+
+    export SSH_ASKPASS=/usr/bin/ssh-askpass
+fi

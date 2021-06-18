@@ -1,5 +1,18 @@
 #!/usr/bin/zsh -f
 
+function _is_gui {
+    test -n "$XAUTHORITY"
+}
+
+function _is_console {
+    echo "$TTY" | grep "tty" > /dev/null 2>&1
+}
+
+function _is_remote {
+    _is_console || _is_gui
+    test $? -ne 0
+}
+
 if [ x"$HOME" = x ] ; then
     export HOME=$(cd ~ ; pwd)
 fi
