@@ -99,4 +99,18 @@ else
         cd "$dir"
         workhere -f
     }
+
+    function tmpclone {
+        dir="$(mktemp -d)"
+        git clone "$@" "$dir"
+        x=$?
+        if [[ $x -ne 0 ]]
+        then
+            rm -fr "$dir"
+            return $x
+        fi
+
+        cd "$dir"
+        workhere -f
+    }
 fi
