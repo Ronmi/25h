@@ -21,3 +21,11 @@ function bench {
 function benchsome {
     go test -benchmem -bench "$@"
 }
+
+function doc {
+    godoc -http ":6060" "$@"
+}
+
+function trun {
+    go test -run "$@"
+}
