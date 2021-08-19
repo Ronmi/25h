@@ -13,7 +13,8 @@ else
 fi
 
 # use gui prompt for gui environment
-if [[ _is_gui ]]
+_is_gui
+if [[ $? == 0 ]]
 then
     export SUDO_ASKPASS=/usr/bin/ssh-askpass
     alias sudo='/usr/bin/sudo -A'
