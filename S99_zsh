@@ -1,0 +1,22 @@
+#!/usr/bin/zsh -f
+
+function local_comp {
+    if [[ $1 == "" ]]
+    then
+        echo "Usage: local_comp _name"
+        echo "Example: local_comp _asd"
+        echo
+        echo "This function is 'cat /dev/stdin > ~/.zfunc/_name' with extra checks. The name MUST prefixed by underscore."
+        return 1
+    fi
+
+    echo "$1" | grep -E '^_' > /dev/null 2>&1
+    if [[ $? -ne 0 ]]
+    then
+        echo "Do you maen '_${1}'?"
+        return 1
+    fi
+
+    cat /dev/stdin > "${HOME}/.zfunc/${1}"
+    hash -r
+}
