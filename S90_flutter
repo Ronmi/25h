@@ -1,0 +1,11 @@
+#!/usr/bin/zsh -f
+
+if [[ -d "${HOME}/flutter/bin" ]]
+then
+    export PATH="${PATH}:${HOME}/flutter/bin"
+fi
+
+if [[ -d "${HOME}/.pub-cache/bin" ]]
+then
+    export PATH="${PATH}:${HOME}/.pub-cache/bin"
+fi
