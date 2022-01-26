@@ -3,4 +3,21 @@
 if [[ -d "${HOME}/.cargo/bin" ]]
 then
     export PATH="${PATH}:${HOME}/.cargo/bin"
+else
+    function rustup {
+        case $1 in
+            install)
+                echo 'installing rustup ... '
+                curl -sSL https://sh.rustup.rs | sh || return $?
+                echo
+                echo
+                echo 'rustup installed!'
+                unset -f rustup
+                exec $SHELL
+                ;;
+            *)
+                echo "rustup not found, run 'rustup install' to install"
+                ;;
+        esac
+    }
 fi
