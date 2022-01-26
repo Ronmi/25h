@@ -33,3 +33,22 @@ then
     done
 fi
 
+function download_new_go {
+    (
+        set -e
+        echo -n "fetching go version ... "
+        fn="$(curl -sSL https://go.dev/dl/ | grep -oE 'go[0-9]+\.[0-9]+\.[0-9]+\.linux-amd64\.tar\.gz'|head -n 1)"
+        ver="$(echo "$fn" | cut -d o -f 2 | cut -d . -f 1-2)"
+        echo "$ver"
+
+        set +e
+        rm -fr "${HOME}/golang/${ver}"
+
+        echo "download into ${HOME}/golang/${ver}..."
+        echo
+
+        set -e
+        mkdir -p "${HOME}/golang/${ver}"
+        curl -sSL "https://go.dev/dl/${fn}" | tar zxvf - -C "${HOME}/golang/${ver}" --strip-components 1
+    )
+}
