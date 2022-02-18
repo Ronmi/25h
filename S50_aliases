@@ -5,11 +5,16 @@ autoload zmv
 alias du="du -hcs"
 alias df="df -h"
 
-which dircolors > /dev/null 2>&1
-if [[ $? -eq 0 ]]
+which lsd > /dev/null 2>&1
+if [[ $? -eq 0 || -x "${HOME}/.cargo/bin/lsd" ]]
 then
-    alias ls="ls --color=auto"
+    alias ls="lsd"
 else
-    alias ls="ls -G"
+    which dircolors > /dev/null 2>&1
+    if [[ $? -eq 0 ]]
+    then
+        alias ls="ls --color=auto"
+    else
+        alias ls="ls -G"
+    fi
 fi
-
