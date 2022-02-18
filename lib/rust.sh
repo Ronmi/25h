@@ -1,5 +1,9 @@
 #!/usr/bin/zsh -f
 
+# WARNING
+#
+# these helpers requires you to install rust toolchains using rustup with default settings
+
 alias b="cargo build"
 alias t="cargo test"
 alias r="cargo run"

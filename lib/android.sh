@@ -1,5 +1,9 @@
 #!/usr/bin/zsh -f
 
+# WARNING
+#
+# these helpers requires you to install android sdk in specified directory!
+
 export ANDROID_SDK_ROOT="${HOME}/Android/Sdk"
 export PATH="${PATH}:${ANDROID_SDK_ROOT}/tools:${ANDROID_SDK_ROOT}/platform-tools"
 
