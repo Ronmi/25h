@@ -4,6 +4,7 @@ autoload zmv
 
 alias du="du -hcs"
 alias df="df -h"
+alias ll="ls -l"
 
 which lsd > /dev/null 2>&1
 if [[ $? -eq 0 || -x "${HOME}/.cargo/bin/lsd" ]]
