@@ -60,3 +60,20 @@ then
         _cxt aarch64-unknown-linux-musl "$@"
     }
 fi
+
+function cover {
+    (
+        set -e
+        name="$(grep name Cargo.toml|cut -d '"' -f 2)"
+        export CARGO_INCREMENTAL=0
+        export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
+        export RUSTDOCFLAGS="-Cpanic=abort"
+        set +e
+        rm -fr default.profraw target/debug/coverage "./target/debug/deps/${name}"* "./target/debug/deps/lib${name}"*
+        set -e
+
+        cargo +nightly build
+        cargo +nightly test "$@"
+        grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing -o ./target/debug/coverage/
+    )
+}
