@@ -8,7 +8,7 @@ then
     
     eval "$(starship init zsh)"
 else
-    source old_S52_git
-    source old_S52_swap
-    source old_S60_prompt
+    source "$HOME/.zsh.d/old_S52_git"
+    source "$HOME/.zsh.d/old_S52_swap"
+    source "$HOME/.zsh.d/old_S60_prompt"
 fi
