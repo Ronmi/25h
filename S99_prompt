@@ -1,0 +1,14 @@
+which starship > /dev/null 2>&1
+if [[ $? == 0 ]]
+then
+    if [[ ! -f "$HOME/.config/starship.toml" ]]
+    then
+        echo -n "H4sIAAAAAAACA31VT4slNRC/96eIjwJnkFkWPAuKLqzIIgyIyHtNU92d153pdNIk6femZ5ybwgpz0BVkWdx11QX34E3U034lx49gJek38zK7eOlOqlK/VP3qT9ba9OjYe2wB59Vone7vbLXpWm74BUhdoRQD2FZuJFihmlGiEW6Cbiy5UdxxC7UwvHLaTLCpbAuNcEVpUFVxWem+Fy4srUPHw6rnzojKXktHC22zs6p11XFDhsrxUwdO9BwGrDpsOJSjggqqHjsOlS61hBp7/zEOaq40GTvyCrgUp8LQrwduJKoGGh1+LdqOSwmtV53gBuFklAKh004KBXJEUKIHpWt+YoHCJ/SBIGBoBxhGOfaCfobbyojBwTC5Visw2I0Q7zG8BjOWE32sA0v8IditWFMg3BhcE92wCSc32FDADs5EQ3Gt6d7TwrbeOQq9Rui5JWjrQwfcElmV1GMNeuCKOPPCM3IEuNoUGzRQmYnElKWx1sRQXdSjQScIggLjRC7HDkZLWUMitNXWhcWJLi2U6Mi7CeZceOqRjAzM/rRosKITi8yIpnXF+qZoet5T6ovRUnoWWba8VUN5tm258iepVBx7ix2dsdUCiuMHHxeff3r8SXH/3vG91WKR+TpBVfuTvGo1O1J0bgkHN5vXjL48RdNYVqLlPpTDnHkg6ybJPUwZfD2ibA2SXKvnnBEjXvuFHt82nAnFkHlMD8mIS2G06rlyTK+Za4Vl1+Xto9vxl2e21dsC5RYnS3DOjDy7YWW1Wi4D1/kBBH8O3/fWO9LJ2raFVnKiw2uUdt92CV5pp95X97XFDme1ypmHuumcnKhTaykoP4G9Dz0FlIyw+WCR9boWaxG3DxbZqBzlsov7zzwtks+WH1F6A5NhdxxwqADC7r6/dDnXyZ1a2EHilOeZa6kXWi39oXfv7pHvRdQL3sxXZJ6RDZYyoMWQs6Vv7TcqdpG9QUWdQPQFdvw9/1y+YoEQ6qB9+dWjp0FcJYcfP4tC31/J6a8ug8LPkcTg2eMo39VATgxhvUvdgl09fxX0ychKkC8fBoQ4kBLsb/6cNX3q4+/XCY4DMYH7NjoUp1lq91vQzAMuUT39O6qa/0H0szB174co9+MxvehFUNCoTMXPg3h/HiT3/PyE9K8ldL9+7u51AcyWSzg32F+wd9gBnNstDheH170w30dTMrno5V9BQWM8ET95MYvnKZtm6fuoDGM/CevHSM/8ACVGv0aG4huQGD2MqTW3k3T1x6OooAcirbPvZrm9VX8vgzw8I6lbMaXhddhX/PvT17+Q5j/PzrxW1gcAAA==" | base64 -d | gunzip > "$HOME/.config/starship.toml"
+    fi
+    
+    eval "$(starship init zsh)"
+else
+    source old_S52_git
+    source old_S52_swap
+    source old_S60_prompt
+fi
