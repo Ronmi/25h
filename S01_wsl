@@ -1,11 +1,14 @@
 #!/usr/bin/zsh -f
 
 WSL=
+QT_QPA_PLATFORM=
 
 grep -i microsoft /proc/version > /dev/null 2>&1
 if [[ $? == 0 ]]
 then
     WSL=1
+    QT_QPA_PLATFORM=wayland
 fi
 
 export WSL
+export QT_QPA_PLATFORM
