@@ -23,7 +23,17 @@ function benchsome {
 }
 
 function doc {
-    godoc -http ":6060" "$@"
+    which pkgsite > /dev/null 2>&1
+    if [[ $? != 0 ]]
+    then
+        set -e
+        (cd ; go install golang.org/x/pkgsite/cmd/pkgsite@latest)
+        set +e
+    fi
+
+    set -x
+    pkgsite -cache -http :8089 -gorepo=~/gosrc "${_RMI_WORK_HERE}"
+    set +x
 }
 
 function trun {
