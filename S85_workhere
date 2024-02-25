@@ -38,6 +38,7 @@ then
         REPORTTIME=-1
         source "${_RMI_WORK_HERE}/.rmi-work/conf.zsh"
         REPORTTIME="$_old_report_time"
+        unset _old_report_time
     fi
 
     function backroot {
@@ -56,22 +57,48 @@ then
     }
 else
     function workhere {
-        if [[ $1 == '-f' ]]
+        if [[ $1 == '-h' ]]
         then
-            mkdir -p .rmi-work
-            touch .rmi-work/conf.zsh
+            echo 'Usage: workhere [-a|-f]'
+            echo
+            echo 'workhere -f will create ".rmi-work" if not exist.'
+            echo 'workhere -a will find the ".rmi-work" in parent directory until reached root.'
+            return 0
+        fi
+        __base="$(pwd)"
+        __dir="${__base}/.rmi-work"
+        if [[ ! -d "$__dir" ]]
+        then
+            if [[ $1 == '-a' ]]
+            then
+                while [[ ! -d "$__dir" ]]
+                do
+                    __base="$(dirname "$__base")"
+                    __dir="${__base}/.rmi-work"
+                    if [[ "$__base" == "/" ]]
+                    then
+                        echo "No workhere configuration found."
+                        echo "You have to 'mkdir -p .rmi-work' first!"
+                        return 1
+                    fi
+                done
+            elif [[ $1 == '-f' ]]
+            then
+                mkdir -p "$__dir"
+                touch "${__dir}/conf.zsh"
+            else
+                echo "You have to 'mkdir -p .rmi-work' first!"
+                return 1
+            fi
         fi
 
-        # search for .rmi-work
-        if [[ ! -d .rmi-work ]]
-        then
-            echo "You have to 'mkdir -p .rmi-work' first!"
-            return 1
-        fi
-
-        export _RMI_WORK_HERE="$(pwd)"
+        export _RMI_WORK_HERE="$__base"
+        unset __dir
+        unset __base
         unset -f workhere
         unset -f workin
+        unset -f tmpwork
+        unset -f tmpclone
         exec "$SHELL" -l
     }
 
