@@ -1,0 +1,33 @@
+# To use python in debian, you must install one of following packages
+#    - python-is-python3 (recommended)
+#    - python-is-python2
+
+if [[ -d "${HOME}/.local/bin" ]]
+then
+    # enable pipx installed utils
+    export PATH="${PATH}:${HOME}/.local/bin"
+fi
+
+if [[ -d "${HOME}/.miniconda" ]]
+then
+    if [ -f "${HOME}/.miniconda/etc/profile.d/conda.sh" ]
+    then
+        . "${HOME}/.miniconda/etc/profile.d/conda.sh"
+    else
+        export PATH="${HOME}/.miniconda/bin:$PATH"
+    fi
+else
+    function install_miniconda() {
+        set -e
+        wget -O /tmp/miniconda.sh "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-$(uname -m).sh"
+        bash /tmp/miniconda.sh -b -p $HOME/.miniconda
+        rm /tmp/miniconda.sh
+        ~/.miniconda/bin/conda config --set changeps1 False
+        if [[ -f "${HOME}/.miniconda/etc/profile.d/conda.sh" ]]
+        then
+            . "${HOME}/.miniconda/etc/profile.d/conda.sh"
+        else
+            export PATH="${HOME}/.miniconda/bin:$PATH"
+        fi
+    }
+fi
