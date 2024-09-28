@@ -1,5 +1,5 @@
-
-export PATH="$HOME/.cargo/bin:$PATH"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+for i in ${HOME}/.zsh.d/S90_*
+do
+    . "$i"
+done
+unset i
