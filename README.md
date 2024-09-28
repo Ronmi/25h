@@ -23,10 +23,10 @@ In addition, for Emacs and other programs using bash by default
 echo 'source "${HOME}/.zsh.d/bash_profile"' >> "${HOME}/.bashrc"
 ```
 
+You might want to add `source ~/.zsh.d/bash_profile` in `~/.zshenv` if you are using Emacs GUI.
+
 ## Highlights
 
 - S95_workhere: experimental project workspace support
-- S90_go: golang with multiple golang version support
-- S90_nvm/phpbrew/rust/composer: auto initializing
-- S01_wsl/S90/docker: experimental wsl and docker in wsl support
-- emacs support (by switching back to bash)
+- S90_*: various devtools support
+- S01_wsl/S90_docker: experimental wsl and docker in wsl support
