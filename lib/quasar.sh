@@ -3,6 +3,8 @@
 
 loadlib node
 
+find . -name 'quasar.config.js' |grep quasar >/dev/null 2>&1 || echo "No Quasar project found in the current directory. Please run 'create_quasar' to set up a new project."
+
 function install_tool {
     NODE_PM add --dev @quasar/cli @quasar/icongenie
 }
