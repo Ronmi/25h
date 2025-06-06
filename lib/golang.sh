@@ -1,4 +1,5 @@
 #!/usr/bin/zsh -f
+# golang helpers to run some command faster
 
 loadlib _lib
 

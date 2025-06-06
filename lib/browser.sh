@@ -1,4 +1,5 @@
 #!/usr/bin/zsh -f
+# separated firefox/chrome environment (customizable)
 #
 # Currently only firefox and chrome are supported.
 #

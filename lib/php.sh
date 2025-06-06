@@ -1,4 +1,5 @@
 #!/bin/zsh -f
+# php helpers
 
 function phpdoc {
     docker run -it --rm -v "${_RMI_WORK_HERE}:/data" phpdoc/phpdoc:3 "$@"

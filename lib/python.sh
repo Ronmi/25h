@@ -1,4 +1,5 @@
 #!/usr/bin/zsh -f
+# python helpers
 
 # disable venv prompt by default
 export VIRTUAL_ENV_DISABLE_PROMPT=1

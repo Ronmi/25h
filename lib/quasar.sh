@@ -1,4 +1,6 @@
 #!/usr/bin/zsh -f
+# quasar framework (vue3) helper, depends on "node" helper
+
 loadlib node
 
 function install_tool {

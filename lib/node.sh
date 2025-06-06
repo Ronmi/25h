@@ -1,4 +1,5 @@
 #!/usr/bin/zsh -f
+# *will be* javescript/typescript helpers
 
 function _use_yarn() {
     command -v yarn >/dev/null 2>&1 || return 1

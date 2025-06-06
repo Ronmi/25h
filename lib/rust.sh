@@ -1,4 +1,5 @@
 #!/usr/bin/zsh -f
+# rust helpers
 
 # WARNING
 #

@@ -1,4 +1,5 @@
 #!/usr/bin/zsh -f
+# merge parent .rmi-work/conf.zsh into current .rmi-work/conf.zsh
 
 if [[ $__tmp_wh == "" ]]
 then

@@ -2,7 +2,8 @@
 
 # [experimental] Separated project environment
 #
-# 1. create a directory '.rmi-work' to hold history and custom settings
+# 1a. create a directory '.rmi-work' to hold history and custom settings
+# 1b. use 'init_workhere' to create a '.rmi-work' directory with custom settings
 # 2. use 'workhere' or 'workin' to switch environment
 #
 # You may create a 'conf.zsh' file in '.rmi-work' to setup the environment.
@@ -12,11 +13,12 @@
 #
 # See lib/*.sh for some *maybe* useful helpers.
 
-if [[ $_RMI_WORK_HERE != "" && -d "${_RMI_WORK_HERE}/.rmi-work" ]]
+if [[ "$_RMI_WORK_HERE" != "" && -d "${_RMI_WORK_HERE}/.rmi-work" ]]
 then
     # set history file
-    f="${_RMI_WORK_HERE}/.rmi-work/history"
-    if [[ ! -f "$f" ]]
+    local f="${_RMI_WORK_HERE}/.rmi-work/history"
+
+    if [ ! -f "$f" ]
     then
         cp "$HISTFILE" "$f"
     fi
@@ -56,6 +58,42 @@ then
         fi
     }
 else
+    function init_workhere {
+        if [[ $# -eq 0 ]]
+        then
+            echo "Usage: init_workhere helper ..."
+            echo
+            echo "Initialize a workhere environment in the current directory."
+            echo
+            echo "Example: init_workhere golang quasar"
+            echo
+            echo "Supported helpers:"
+            find "${HOME}/.zsh.d/lib" -name '[a-z0-9]*.sh' -exec bash -c 'echo -n "  " ; basename "{}" | sed "s/[.]sh//"; echo -n "    " ; head -n 2 "{}" | tail -n 1' ';'
+            return 1
+        fi
+
+        if [[ -d .rmi-work ]]
+        then
+            echo "You are already in a workhere environment."
+            return 1
+        fi
+
+        mkdir .rmi-work
+        touch .rmi-work/conf.zsh
+        for i in "$@"
+        do
+            if [[ ! -f "${HOME}/.zsh.d/lib/${i}.sh" ]]
+            then
+                echo "Extension '${i}' not found."
+                return 1
+            fi
+
+            echo "loadlib ${i}" >> .rmi-work/conf.zsh
+        done
+
+        echo "WORKHERE environment initialized."
+        echo "You can now run 'workhere' to switch to this environment."
+    }
     function workhere {
         if [[ $1 == '-h' ]]
         then
