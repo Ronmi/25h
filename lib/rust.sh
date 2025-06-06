@@ -38,8 +38,6 @@ fi
 
 if [[ -n "$RUST_ENABLE_CROSS" ]]
 then
-    source "$(dirname "$(readlink -e "$0")")/docker.sh"
-    
     function _cxt {
         target="$1"
         act="$2"
