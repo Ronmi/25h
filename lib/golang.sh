@@ -41,5 +41,5 @@ function trun {
     go test -run "$@"
 }
 
-find "${_RMI_WORK_DIR}" -name go.mod | grep -F go.mod > /dev/null 2>&1 || \
-echo "You have not set up your Go workspace yet. Please run 'go mod init' in your project directory."
+find "${_RMI_WORK_HERE}" -name go.mod | grep -F go.mod > /dev/null 2>&1 || \
+    echo "You have not set up your Go workspace yet. Please run 'go mod init' in your project directory."
