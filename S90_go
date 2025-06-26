@@ -19,6 +19,7 @@ then
 fi
 
 export PATH="${GOPATH}/bin:${PATH}"
+ln -sf "${GOPATH}/bin" "${HOME}/bin/golang"
 
 if [[ -d "${HOME}/golang" ]]
 then

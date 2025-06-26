@@ -3,6 +3,7 @@
 if [[ -d "${HOME}/.cargo/bin" ]]
 then
     export PATH="${PATH}:${HOME}/.cargo/bin"
+    ln -sf "${HOME}/.cargo/bin" "${HOME}/bin/cargo"
 else
     function rustup {
         case $1 in
