@@ -20,13 +20,10 @@ ln -sf "${HOME}/.zsh.d/zshrc" "${HOME}/.zshrc"
 In addition, for Emacs and other programs using bash by default
 
 ```sh
-echo 'source "${HOME}/.zsh.d/bash_profile"' >> "${HOME}/.bashrc"
+lh -sf "${HOME}/.zsh.d/bash_profile" "${HOME}/.profie"
 ```
-
-You might want to add `source ~/.zsh.d/bash_profile` in `~/.zshenv` if you are using Emacs GUI.
 
 ## Highlights
 
-- S95_workhere: experimental project workspace support
-- S90_*: various devtools support
-- S01_wsl/S90_docker: experimental wsl and docker in wsl support
+- `S95_workhere` and `lib/*`: project workspace support
+- `S90_*`: various devtools support
