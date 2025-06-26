@@ -1,3 +1,5 @@
+#!/usr/bin/zsh -f
+
 # To use python in debian, you must install one of following packages
 #    - python-is-python3 (recommended)
 #    - python-is-python2
