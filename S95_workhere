@@ -57,6 +57,15 @@ then
             post_workhere
         fi
     }
+
+    function cd {
+        if [[ $# -eq 0 ]]
+        then
+            builtin cd "$_RMI_WORK_HERE"
+        else
+            builtin cd "$@"
+        fi
+    }
 else
     function init_workhere {
         if [[ $# -eq 0 ]]

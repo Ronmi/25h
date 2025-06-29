@@ -26,4 +26,8 @@ lh -sf "${HOME}/.zsh.d/bash_profile" "${HOME}/.profie"
 ## Highlights
 
 - `S95_workhere` and `lib/*`: project workspace support
+  * separated command history
+  * various tools like command aliases and helper functions
+  * write your own and put it in `~/.zsh.d/lib/local/my-func.sh`, load with `loadlib local/my-func` in `{workspace_dir}/.rmi-work/config.zsh`
+  * overwrites `cd` command, execute cd without args will go back to project root
 - `S90_*`: various devtools support
