@@ -17,9 +17,10 @@ function use_venv {
 
 function use_conda {
     ve="${_RMI_WORK_DIR}/conda_env"
+    name="$(basename "$_RMI_WORK_HERE")"
     if [[ ! -d "${ve}" ]]
     then
-        conda create -y --prefix "${ve}" "$@"
+        conda create -y --prefix "${ve}" --name "$name" "$@"
     fi
     conda activate "${ve}"
     unset ve
