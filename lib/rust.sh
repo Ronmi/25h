@@ -11,6 +11,9 @@ alias r="cargo run"
 alias u="cargo update"
 alias c="cargo clean"
 
+# set default cargo target dir
+export CARGO_TARGET_DIR="${_RMI_WORK_DIR}/cargo-build"
+
 ################ cross build helpers
 
 if [[ -n "$RUST_ENABLE_MUSL" ]]
