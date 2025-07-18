@@ -20,7 +20,7 @@ function use_conda {
     name="$(basename "$_RMI_WORK_HERE")"
     if [[ ! -d "${ve}" ]]
     then
-        conda create -y --prefix "${ve}" --name "$name" "$@"
+        conda create -y --prefix "${ve}" "$@"
     fi
     conda activate "${ve}"
     unset ve
