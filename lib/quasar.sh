@@ -49,4 +49,8 @@ function quasar_test {
 
 alias qb="quasar build"
 alias qba="quasar build -m capacitor -T android"
+alias qbe="quasar build -m electron"
+alias qbx="quasar build -m bex"
+alias qbp="quasar build -m pwa"
+alias qbs="quasar build -m ssr"
 alias qt="quasar_test"
