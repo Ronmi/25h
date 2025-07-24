@@ -21,10 +21,19 @@ function _has_arg() {
 function _set_helper() {
     local cmd_name="$1"
     test -z "$cmd_name" && {
-        echo "Usage: _set_helper <alias_name> <command...>"
-        return $?
+        echo "Usage: _set_helper <alias_name> <helper_name> <command...>"
+        return 1
     }
     shift
+    local name="$1"
+    shift
+    if [[ $# -eq 0 ]]
+    then
+        echo "Usage: _set_helper <alias_name> <helper_name> <command...>"
+        return 1
+    fi
 
     alias "$cmd_name"="$*"
+
+    echo "${name} helper has been installed, run '${cmd_name}' to use it."
 }

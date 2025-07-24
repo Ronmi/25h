@@ -5,7 +5,7 @@ loadlib _lib
 loadlib node
 
 _quasar_cmd="${_quasar_cmd_name:=quasar}"
-_set_helper "$_quasar_cmd" _run_quasar_cmd
+_set_helper "$_quasar_cmd" Quasar _run_quasar_cmd
 
 function _quasar_helper_usage() {
     cat <<EOF

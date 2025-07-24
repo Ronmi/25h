@@ -3,7 +3,7 @@
 
 loadlib _lib
 _flatpak_cmd="${_flatpak_cmd_name:-fpak}"
-_set_helper "$_flatpak_cmd" _run_fpak_cmd
+_set_helper "$_flatpak_cmd" Flatpak _run_fpak_cmd
 
 FLATPAK_BIN="$(whence flatpak)" || echo "flatpak not found, please install flatpak"
 

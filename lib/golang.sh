@@ -3,7 +3,7 @@
 
 loadlib _lib
 _go_cmd="${_go_cmd_name:-g}"
-_set_helper "$_go_cmd" _run_go_cmd
+_set_helper "$_go_cmd" Golang _run_go_cmd
 
 function _go_helper_usage() {
     cat <<EOF
