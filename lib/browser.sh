@@ -34,7 +34,7 @@ user_pref("browser.shell.didSkipDefaultBrowserCheckOnFirstRun", true);
 user_pref("app.update.auto", false);
 EOF
 
-    test_func reset_firefox_hook && reset_firefox_hook
+    _has_func reset_firefox_hook && reset_firefox_hook
 }
 
 function firefox {
@@ -65,5 +65,5 @@ function reset_chrome {
     p="${_RMI_WORK_DIR}/chrome"
     rm -fr "$p" > /dev/null 2>&1
     mkdir -p "$p"
-    test_func reset_chrome_hook && reset_chrome_hook
+    _has_func reset_chrome_hook && reset_chrome_hook
 }
