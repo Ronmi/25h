@@ -1,6 +1,7 @@
 #!/usr/bin/zsh -f
-# quasar framework (vue3) helper, depends on "node" helper, run "q" for help
+# quasar framework (vue3) helper, depends on "node" helper, run "quasar" for help
 
+loadlib _lib
 loadlib node
 
 function _quasar_helper_usage() {
@@ -38,7 +39,7 @@ function _quasar() {
     NODE_PM exec quasar "$@"
 }
 
-function q() {
+function _quasar_cmd() {
     local cmd="$1"
     if [[ -z "$cmd" ]]
     then
@@ -116,6 +117,8 @@ function _quasar_cmd_test {
 
     NODE_PM run "test:${joined_string}"
 }
+
+_set_helper "$_quasar_cmd_name" quasar _quasar_cmd
 
 (
     cd "$_RMI_WORK_HERE"

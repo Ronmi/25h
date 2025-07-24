@@ -17,3 +17,12 @@ function _has_arg() {
     done
     return 1
 }
+
+function _set_helper() {
+    local cmd_name="$1"
+    test -z "$cmd_name" && cmd_name="$2"
+    shift
+    shift
+
+    alias "$cmd_name"="$*"
+}
