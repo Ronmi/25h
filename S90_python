@@ -14,7 +14,11 @@ if [[ -d "${HOME}/.miniconda" ]]
 then
     if [ -f "${HOME}/.miniconda/etc/profile.d/conda.sh" ]
     then
-        . "${HOME}/.miniconda/etc/profile.d/conda.sh"
+        function conda() {
+            unset -f conda
+            . "${HOME}/.miniconda/etc/profile.d/conda.sh"
+            conda "$@"
+        }
     else
         export PATH="${HOME}/.miniconda/bin:$PATH"
     fi
