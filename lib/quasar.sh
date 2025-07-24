@@ -1,5 +1,5 @@
 #!/usr/bin/zsh -f
-# quasar framework (vue3) helper, depends on "node" helper
+# quasar framework (vue3) helper, depends on "node" helper, run "q" for help
 
 loadlib node
 
@@ -8,49 +8,110 @@ loadlib node
     find . -name 'quasar.config.[jt]s' |grep quasar >/dev/null 2>&1 || echo "No Quasar project found in the current directory. Please run 'create_quasar' to set up a new project."
 )
 
-function install_tool {
+function _quasar_helper_usage() {
+    cat <<EOF
+Usage: q [command] [args...]
+
+Available commands:
+    init
+            Create a new Quasar project
+    it|install-tool
+            Install Quasar CLI and IconGenie as dev dependencies
+    icongenie [args...]
+            Run IconGenie commands
+    t|test [args...]
+            Run Quasar tests. Running 'q test unit ci' is equivalent to
+            'npm test:unit:ci' (or pnpm/yarn, depending on your setup).
+    b [args...]
+            Build Quasar app
+    b a [args...]
+            Build Android app with Capacitor
+    b e [args...]
+            Build Electron app
+    b x [args...]
+            Build Browser Extension (BEX)
+    b p [args...]
+            Build Progressive Web App (PWA)
+    b s [args...]
+            Build Server-Side Rendered (SSR) app
+    [args...]
+            Passes all arguments to the 'quasar' command
+EOF
+}
+
+function _quasar() {
+    NODE_PM exec quasar "$@"
+}
+
+function q() {
+    local cmd="$1"
+    if [[ -z "$cmd" ]]
+    then
+        _quasar_helper_usage
+        return 0
+    fi
+    shift
+    case "$cmd" in
+        init)
+            _quasar_cmd_init "$@"
+            ;;
+        it|install-tool)
+            _quasar_cmd_install_tool "$@"
+            ;;
+        icongenie)
+            NODE_PM exec icongenie "$@"
+            ;;
+        t|test)
+            _quasar_cmd_test "$@"
+            ;;
+        b)
+            local sub_cmd="$1"
+            shift
+            case "$sub_cmd" in
+                a)
+                    _quasar build -m capacitor -T android "$@"
+                    ;;
+                e)
+                    _quasar build -m electron "$@"
+                    ;;
+                x)
+                    _quasar build -m bex "$@"
+                    ;;
+                p)
+                    _quasar build -m pwa "$@"
+                    ;;
+                s)
+                    _quasar build -m ssr "$@"
+                    ;;
+                *)
+                    _quasar build "$sub_cmd" "$@"
+                    ;;
+            esac
+            ;;
+        *)
+            _quasar "$cmd" "$@"
+            ;;
+    esac
+}
+
+function _quasar_cmd_install_tool() {
     NODE_PM add -D @quasar/cli @quasar/icongenie
 }
 
-function create_quasar() {
+function _quasar_cmd_init() {
     NODE_PM create quasar@latest || return $?
-    install_tool
+    q install-tool
 }
 
-function quasar {
-    npx quasar "$@"
-}
-
-function icongenie {
-    npx icongenie "$@"
-}
-
-function quasar_test {
+function _quasar_cmd_test {
     if [[ $# -eq 0 ]]
     then
         NODE_PM test
         return $?
     fi
 
-    if [[ "$1" == "help" ]]
-    then
-        echo
-        echo "Usage: quasar_test [args...]"
-        echo
-        echo "  Running 'quasar_test unit ui' equals to 'NODE_PM test:unit:ui'"
-        echo "  where 'NODE_PM' is one of pnpm or yarn."
-	return 0
-    fi
     local original_args=("$@")
     local joined_string="${(j.:.)original_args}"
 
     NODE_PM run "test:${joined_string}"
 }
-
-alias qb="quasar build"
-alias qba="quasar build -m capacitor -T android"
-alias qbe="quasar build -m electron"
-alias qbx="quasar build -m bex"
-alias qbp="quasar build -m pwa"
-alias qbs="quasar build -m ssr"
-alias qt="quasar_test"
