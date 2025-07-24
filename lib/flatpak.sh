@@ -4,7 +4,6 @@
 loadlib _lib
 
 FLATPAK_BIN="$(whence flatpak)" || echo "flatpak not found, please install flatpak"
-whence flatpak-builder >/dev/null 2>&1 || echo "flatpak-builder not found, please install flatpak-builder"
 
 function _fpak_help() {
     cat <<EOF
