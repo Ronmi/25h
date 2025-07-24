@@ -25,11 +25,13 @@ Commands:
     use <repo-name> [commit_id]
             Sets the specified commit as current version. It will try to find the
             latest commit if no commit_id is specified.
+            You need jq to run this command.
     docker <repo-name> [--port <port>] [--local]
             Creates a nginx server (with docker) to serve the specified ostree
             repository. If --port is specified, it will use the specified port
             instead of the default 8080. If --local is specified, it will bind to
             loopback address (-p 127.0.0.1:port:80 instead of -p port:80).
+            you need docker to run this command.
     l|ls [--full]
             Lists extracted repository. If --full is specified, it will show full
             path to the repository.
@@ -171,7 +173,7 @@ function _fpak_cmd_merge() {
 
     local flatpak_file="$1"
     local _b_n="$(basename "$flatpak_file" .flatpak)"
-    local base_name="$(echo "$_b_n" | cut -d '-' -f 1)-$(echo "$_b_n" | cut -d '-' -f 3)"
+    local base_name="$(echo "$_b_n" | cut -d '-' -f 1)"
     local repo_path="$(_fpak_repo_path "$base_name")"
 
     # create and initialize the repository if it does not exist
@@ -206,6 +208,49 @@ function _fpak_cmd_extract() {
     fpak merge "$1" || return $?
 }
 
+function _fpak_commit_as_info() {
+    local repo_name="$1"
+    local commit_id="$2"
+    local repo_path="$(_fpak_repo_path "$repo_name")"
+    local date="$(fpak ostree "$repo_name" show "$commit_id" | grep -F "Date:" | cut -d ':' -f 2- | xargs)"
+    local name="$(fpak ostree "$repo_name" show "$commit_id" | grep -F "Name:" | cut -d ':' -f 2- | xargs)"
+    local arch="$(fpak ostree "$repo_name" show "$commit_id" | grep -F "Arch:" | cut -d ':' -f 2- | xargs)"
+    local branch="$(fpak ostree "$repo_name" show "$commit_id" | grep -F "Branch:" | cut -d ':' -f 2- | xargs)"
+
+    if [[ -z "$name" || -z "$arch" || -z "$branch" ]]
+    then
+        return
+    fi
+
+    echo '{}' | jq -SMc "setpath([\"name\"]; \"${name}\")|
+        setpath([\"arch\"]; \"${arch}\")|
+        setpath([\"branch\"]; \"${branch}\")|
+        setpath([\"date\"]; \"${date}\")|
+        setpath([\"ref\"]; \"app/${name}/${arch}/${branch}\")|
+        setpath([\"commit_id\"]; \"${commit_id}\")"
+}
+
+function _fpak_all_commit_info() {
+    local repo_name="$1"
+    local ret='[]'
+    _fpak_commit_ids "$repo_name" | while read -r commit_id
+    do
+        ret="$(echo "$ret" | jq -SMC ". + [$(_fpak_commit_as_info "$repo_name" "$commit_id")]" 2>/dev/null)"
+    done
+
+    echo "$ret" | jq -SMc '.'
+}
+
+function _fpak_create_ref() {
+    local repo_name="$1"
+    local commit_info="$2"
+    local repo_path="$(_fpak_repo_path "$repo_name")"
+    local ref="$(echo "$commit_info" | jq -r '.ref')"
+    local commit_id="$(echo "$commit_info" | jq -r '.commit_id')"
+    mkdir -p "$(dirname "${repo_path}/refs/heads/${ref}")"
+    echo "$commit_id" > "${repo_path}/refs/heads/${ref}"
+}
+
 function _fpak_cmd_commits() {
     local repo_path="$(_fpak_repo_path "$1")"
     if [[ ! -d "$repo_path" ]]; then
@@ -236,40 +281,28 @@ function _fpak_cmd_use() {
         return 1
     fi
 
-    echo -n "Using commit ... "
-
     local commit_id="$2"
-    if [[ -z "$commit_id" ]]
+    if [[ ! -z "$commit_id" ]]
     then
-        local target_date="$(
-        fpak commits "$repo_name" \
-            | grep -F "Date:" \
-            | cut -d ':' -f 2- \
-            | xargs \
-            | sort -r \
-            | head -n 1
-)"
-        _fpak_commit_ids "$repo_name" | while read -r commit
-        do
-            fpak ostree "$repo_name" show "$commit" \
-                | grep -F "Name:" > /dev/null 2>&1 \
-                || continue
-            fpak ostree "$repo_name" show "$commit" \
-                | grep -F "$target_date" > /dev/null 2>&1 \
-                && commit_id="$commit" \
-                && break
-        done
+        local info="$(_fpak_commit_as_info "$repo_name" "$commit_id")"
+        local ref="$(echo "$info" | jq -r '.ref')"
+        local id="$(echo "$info" | jq -r '.commit_id' | cut -c -12)"
+        _fpak_create_ref "$repo_name" "$info"
+        echo "Ref ${ref} is pointing to commit ${id}."
+        return $?
     fi
 
-    if [[ -z "$commit_id" ]]; then
-        echo "not found."
-        return 1
-    fi
-    echo "$commit_id"
-
-    local dest="$(_fpak_repo_path "$1")/refs/heads/$(_fpak_current_info head "$1")"
-    mkdir -p "$(dirname "$dest")"
-    echo -n "$commit_id" > "$dest"
+    local commits="$(_fpak_all_commit_info "$repo_name")"
+    echo "$commits" | jq .
+    while [[ "$(echo "$commits" | jq length)" -gt 0 ]]
+    do
+        local cur="$(echo "$commits" | jq -SMc '.[0]')"
+        commits="$(echo "$commits" | jq -SMc '.[1:]')"
+        local ref="$(echo "$cur" | jq -r '.ref')"
+        local id="$(echo "$cur" | jq -r '.commit_id' | cut -c -12)"
+        _fpak_create_ref "$repo_name" "$cur"
+        echo "Ref ${ref} is pointing to commit ${id}."
+    done
 }
 
 function _fpak_cmd_repo_rebuild() {
@@ -350,7 +383,7 @@ function _fpak_cmd_docker() {
     echo "A special alias 'fpak-docker-stop' is created for convenience."
     echo
 
-    alias fpak-install="flatpak install --reinstall --user test '$(fpak o "${repo_name}" refs | grep -F app/ | cut -d '/' -s -f 2)'"
+    alias fpak-install="flatpak install --reinstall --user test $(fpak o "${repo_name}" refs | grep -F app/ | head -n 1 | cut -d '/' -s -f 2)"
     echo "To install you app, run:"
     echo "    flatpak install --user test '$(fpak o "${repo_name}" refs | grep -F app/ | cut -d '/' -s -f 2)'"
     echo "A special alias 'fpak-install' is created for convenience."
