@@ -1,43 +1,101 @@
 #!/usr/bin/zsh -f
-# golang helpers to run some command faster
+# golang helpers to run some command faster, run "g" for help
 
 loadlib _lib
 
-function coverhtml {
+function _go_helper_usage() {
+    cat <<EOF
+Usage: g [command] [args]
+
+Available commands:
+    c|coverhtml
+            Generate HTML coverage report
+    coverfunc
+            Generate function coverage report
+    b|bench
+            Run benchmarks
+    benchsome [filter]
+            Run benchmarks matching the filter
+    d|doc [--force-update|-u]
+            Start a local documentation server for Go packages. It installs pkgsite
+            if not already installed. You can use --force-update or -u to force
+            updating pkgsite to the latest version.
+    t|test [filter]
+            Run tests matching the filter
+EOF
+}
+
+function g() {
+    case "$1" in
+        c|coverhtml)
+            shift
+            _go_cmd_coverhtml "$@"
+            return $?
+            ;;
+        coverfunc)
+            shift
+            _go_cmd_coverfunc "$@"
+            return $?
+            ;;
+        b|bench)
+            shift
+            _go_cmd_bench "$@"
+            return $?
+            ;;
+        benchsome)
+            shift
+            _go_cmd_benchsome "$@"
+            return $?
+            ;;
+        d|doc)
+            shift
+            _go_cmd_doc "$@"
+            return $?
+            ;;
+        t|test)
+            shift
+            _go_cmd_test "$@"
+            return $?
+            ;;
+        *)
+            _go_helper_usage
+            return 1
+    esac
+}
+
+function _go_cmd_coverhtml {
     cover="${_RMI_WORK_DIR}/go.coverage"
     go test -coverprofile="${cover}" "$@" \
         && go tool cover -html="${cover}"
 }
 
-function coverfunc {
+function _go_cmd_coverfunc {
     cover="${_RMI_WORK_DIR}/go.coverage"
     go test -coverprofile="${cover}" "$@" \
         && go tool cover -func="${cover}"
 }
 
-function bench {
-    benchsome . "$@"
+function _go_cmd_bench {
+    _go_cmd_benchsome . "$@"
 }
 
-function benchsome {
+function _go_cmd_benchsome {
     go test -benchmem -bench "$@"
 }
 
-function doc {
+function _go_cmd_doc {
+    local force_update=1
+    _has_arg --force-update "$@" || _has_arg -u "$@" || force_update=0
     which pkgsite > /dev/null 2>&1
-    if [[ $? != 0 ]]
+    if [[ $? != 0 || $force_update -eq 1 ]]
     then
-        set -e
-        (cd ; go install golang.org/x/pkgsite/cmd/pkgsite@latest)
-        set +e
+        go install golang.org/x/pkgsite/cmd/pkgsite@latest || retrun $?
     fi
 
-    set -x
     pkgsite -cache -http :8089 -gorepo=~/gosrc "${_RMI_WORK_HERE}"
-    set +x
 }
 
-function trun {
+function _go_cmd_test {
     go test -run "$@"
 }
 
