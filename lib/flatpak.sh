@@ -2,12 +2,14 @@
 # a helper to extrct single-file bundle and wrap ostree commands, run "fpak" for help
 
 loadlib _lib
+_flatpak_cmd="${_flatpak_cmd_name:-fpak}"
+_set_helper "$_flatpak_cmd" _run_fpak_cmd
 
 FLATPAK_BIN="$(whence flatpak)" || echo "flatpak not found, please install flatpak"
 
 function _fpak_help() {
     cat <<EOF
-Usage: fpak [command] [options]
+Usage: ${_flatpak_cmd} [command] [options]
 
 Commands:
     e|extract <sfb-file>
@@ -51,7 +53,7 @@ Commands:
 EOF
 }
 
-function fpak() {
+function _run_fpak_cmd() {
     local cmd="$1"
     shift
     case "$cmd" in
@@ -142,13 +144,13 @@ function _fpak_current_info() {
         set -e
         case "$cmd" in
             name)
-                fpak ostree "$1" show "$2" | grep -F Name: | cut -d ':' -f 2- | xargs
+                _fpak_cmd_ostree "$1" show "$2" | grep -F Name: | cut -d ':' -f 2- | xargs
                 ;;
             arch)
-                fpak ostree "$1" show "$2" | grep -F Arch: | cut -d ':' -f 2- | xargs
+                _fpak_cmd_ostree "$1" show "$2" | grep -F Arch: | cut -d ':' -f 2- | xargs
                 ;;
             branch)
-                fpak ostree "$1" show "$2" | grep -F Branch: | cut -d ':' -f 2- | xargs
+                _fpak_cmd_ostree "$1" show "$2" | grep -F Branch: | cut -d ':' -f 2- | xargs
                 ;;
             head)
                 local name="$(_fpak_current_info name "$@")"
@@ -180,16 +182,16 @@ function _fpak_cmd_merge() {
     mkdir -p "$repo_path"
     if [[ ! -f "${repo_path}/config" ]]
     then
-        fpak ostree "$base_name" init --mode=archive-z2 || return 1
+        _fpak_cmd_ostree "$base_name" init --mode=archive-z2 || return 1
         new=1
     fi
 
     # extract the single-file bundle into the repository
-    fpak ostree "$base_name" static-delta apply-offline "$flatpak_file" || return $?
+    _fpak_cmd_ostree "$base_name" static-delta apply-offline "$flatpak_file" || return $?
 
     if [[ $new -eq 1 ]]
     then
-        fpak use "$base_name" || return $?
+        _fpak_cmd_use "$base_name" || return $?
     fi
 }
 
@@ -204,17 +206,17 @@ function _fpak_cmd_extract() {
     local repo_path="$(_fpak_repo_path "$base_name")"
     rm -fr "$repo_path"
 
-    fpak merge "$1" || return $?
+    _fpak_cmd_merge "$1" || return $?
 }
 
 function _fpak_commit_as_info() {
     local repo_name="$1"
     local commit_id="$2"
     local repo_path="$(_fpak_repo_path "$repo_name")"
-    local date="$(fpak ostree "$repo_name" show "$commit_id" | grep -F "Date:" | cut -d ':' -f 2- | xargs)"
-    local name="$(fpak ostree "$repo_name" show "$commit_id" | grep -F "Name:" | cut -d ':' -f 2- | xargs)"
-    local arch="$(fpak ostree "$repo_name" show "$commit_id" | grep -F "Arch:" | cut -d ':' -f 2- | xargs)"
-    local branch="$(fpak ostree "$repo_name" show "$commit_id" | grep -F "Branch:" | cut -d ':' -f 2- | xargs)"
+    local date="$(_fpak_cmd_ostree "$repo_name" show "$commit_id" | grep -F "Date:" | cut -d ':' -f 2- | xargs)"
+    local name="$(_fpak_cmd_ostree "$repo_name" show "$commit_id" | grep -F "Name:" | cut -d ':' -f 2- | xargs)"
+    local arch="$(_fpak_cmd_ostree "$repo_name" show "$commit_id" | grep -F "Arch:" | cut -d ':' -f 2- | xargs)"
+    local branch="$(_fpak_cmd_ostree "$repo_name" show "$commit_id" | grep -F "Branch:" | cut -d ':' -f 2- | xargs)"
 
     if [[ -z "$name" || -z "$arch" || -z "$branch" ]]
     then
@@ -259,7 +261,7 @@ function _fpak_cmd_commits() {
     
     _fpak_commit_ids "$1" | while read -r commit_id
     do
-        local info="$(fpak ostree "$1" show "$commit_id")"
+        local info="$(_fpak_cmd_ostree "$1" show "$commit_id")"
         echo "$info" | grep -F "Name:" > /dev/null 2>&1 || continue
 
         echo "$info"
@@ -356,7 +358,7 @@ function _fpak_cmd_docker() {
         shift
     done
 
-    fpak repo rebuild "$repo_name" || return $?
+    _fpak_cmd_repo_rebuild "$repo_name" || return $?
 
     echo -n "Starting nginx server on port ${bind}${port} ..."
     local docker_id="$(docker run --rm -d \
@@ -382,9 +384,9 @@ function _fpak_cmd_docker() {
     echo "A special alias 'fpak-docker-stop' is created for convenience."
     echo
 
-    alias fpak-install="flatpak install --reinstall --user test $(fpak o "${repo_name}" refs | grep -F app/ | head -n 1 | cut -d '/' -s -f 2)"
+    alias fpak-install="flatpak install --reinstall --user test $(_fpak_cmd_ostree "${repo_name}" refs | grep -F app/ | head -n 1 | cut -d '/' -s -f 2)"
     echo "To install you app, run:"
-    echo "    flatpak install --user test '$(fpak o "${repo_name}" refs | grep -F app/ | cut -d '/' -s -f 2)'"
+    echo "    flatpak install --user test '$(_fpak_cmd_ostree "${repo_name}" refs | grep -F app/ | cut -d '/' -s -f 2)'"
     echo "A special alias 'fpak-install' is created for convenience."
 }
 
@@ -410,7 +412,7 @@ function _fpak_cmd_ls() {
 function _fpak_list_repo() {
     local full="--full"
     _has_arg "--full" "$@" || _has_arg "-f" "$@" || full=""
-    fpak ls "$full"
+    _fpak_cmd_ls "$full"
 }
 
 function _fpak_cmd_repo_first() {
