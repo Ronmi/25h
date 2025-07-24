@@ -4,9 +4,12 @@
 loadlib _lib
 loadlib node
 
+_quasar_cmd="${_quasar_cmd_name:=quasar}"
+_set_helper "$_quasar_cmd" _run_quasar_cmd
+
 function _quasar_helper_usage() {
     cat <<EOF
-Usage: q [command] [args...]
+Usage: ${_quasar_cmd} [command] [args...]
 
 Available commands:
     init
@@ -39,7 +42,7 @@ function _quasar() {
     NODE_PM exec quasar "$@"
 }
 
-function _quasar_cmd() {
+function _run_quasar_cmd() {
     local cmd="$1"
     if [[ -z "$cmd" ]]
     then
@@ -102,7 +105,7 @@ function _quasar_cmd_install_tool() {
 
 function _quasar_cmd_init() {
     NODE_PM create quasar@latest || return $?
-    q install-tool
+    _quasar_cmd_install_tool
 }
 
 function _quasar_cmd_test {
@@ -117,8 +120,6 @@ function _quasar_cmd_test {
 
     NODE_PM run "test:${joined_string}"
 }
-
-_set_helper "$_quasar_cmd_name" quasar _quasar_cmd
 
 (
     cd "$_RMI_WORK_HERE"

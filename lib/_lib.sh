@@ -20,8 +20,10 @@ function _has_arg() {
 
 function _set_helper() {
     local cmd_name="$1"
-    test -z "$cmd_name" && cmd_name="$2"
-    shift
+    test -z "$cmd_name" && {
+        echo "Usage: _set_helper <alias_name> <command...>"
+        return $?
+    }
     shift
 
     alias "$cmd_name"="$*"
