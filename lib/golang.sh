@@ -2,10 +2,12 @@
 # golang helpers to run some command faster, run "g" for help
 
 loadlib _lib
+_go_cmd="${_go_cmd_name:-g}"
+_set_helper "$_go_cmd" _run_go_cmd
 
 function _go_helper_usage() {
     cat <<EOF
-Usage: g [command] [args]
+Usage: ${_go_cmd} [command] [args]
 
 Available commands:
     c|coverhtml
@@ -25,7 +27,7 @@ Available commands:
 EOF
 }
 
-function g() {
+function _run_go_cmd() {
     case "$1" in
         c|coverhtml)
             shift
