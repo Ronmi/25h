@@ -1,288 +1,402 @@
 #!/usr/bin/zsh -f
 # a helper to extrct single-file bundle and wrap ostree commands, run "fpak" for help
 
+loadlib _lib
+
 FLATPAK_BIN="$(whence flatpak)" || echo "flatpak not found, please install flatpak"
 whence flatpak-builder >/dev/null 2>&1 || echo "flatpak-builder not found, please install flatpak-builder"
 
+function _fpak_help() {
+    cat <<EOF
+Usage: fpak [command] [options]
+
+Commands:
+    e|extract <sfb-file>
+            Extracts a single-file bundle (SFB) as ostree repository. It will
+            overwrite target directory (.rmi-work/flatpak/basename_of_sfb_file/repo)
+            if exists.
+    m|merge <sfb-file>
+            Extracts a single-file bundle (SFB) and merges it into target directory
+            (.rmi-work/flatpak/basename_of_sfb_file/repo). If the target directory
+            does not exist, it is identical to 'extract'.
+    commits <repo-name>
+            Lists commits in the specified ostree repository. The repository
+            must be a valid ostree repository.
+    use <repo-name> [commit_id]
+            Sets the specified commit as current version. It will try to find the
+            latest commit if no commit_id is specified.
+    docker <repo-name> [--port <port>] [--local]
+            Creates a nginx server (with docker) to serve the specified ostree
+            repository. If --port is specified, it will use the specified port
+            instead of the default 8080. If --local is specified, it will bind to
+            loopback address (-p 127.0.0.1:port:80 instead of -p port:80).
+    l|ls [--full]
+            Lists extracted repository. If --full is specified, it will show full
+            path to the repository.
+    o|ostree <repo-name> <command> [args...]
+            Runs an ostree command on the specified repository. The repository
+            must be a valid ostree repository.
+    r|repo f|first [-f|--full]
+            Just a shortcut for 'fpak l --full | head -n 1'.
+    r|repo l|last [-f|--full]
+            Just a shortcut for 'fpak l --full | tail -n 1'.
+    r|repo n|nth <n> [-f|--full]
+            Just a shortcut for 'fpak l --full | sed -n "${n}p"'.
+    r|repo br|rebuild <repo-name>
+            Rebuilds the specified repository. It will run 'flatpak build-update-repo'
+            on the repository to generate static deltas and update the repository.
+    h|help
+            Displays this help message.
+EOF
+}
+
 function fpak() {
-    case "$1" in
-        "")
-            echo "Usage: fpak [ex|extract|o|ostree|fake-repo|flatpak command] [args]"
-            echo
-            echo "Example:"
-            echo "  fpak ex               # show usage of command extract"
-            echo "  fpak ostree           # show usage of command ostree"
-            echo "  fpak fake-repo        # show usage of command fake-repo"
-            echo "  # flatpak commands"
-            echo "  fpak install --user <path-to-flatpak-file>"
-            echo "  fpak --help           # same as 'flatpak --help'"
-            echo
-            echo "There are three additional helpers:"
-            echo
-            echo "  first_fpak_repo  - same as 'fpak ex ls | head -n 1'"
-            echo "  last_fpak_repo   - same as 'fpak ex ls | tail -n 1'"
-            echo "  nth_fpak_repo N  - same as 'fpak ex ls | sed -n 'Np'"
-            echo
-            echo 'Example usage:'
-            echo '    fpak o "$(first_fpak_repo)" refs'
-            echo '    ostree --repo="$(nth_fpak_repo 1 --full)" refs'
-            return 0
+    local cmd="$1"
+    shift
+    case "$cmd" in
+        e|extract)
+            _fpak_cmd_extract "$@"
             ;;
-        fake-repo)
-            shift
-            case "$1" in
-                build)
-                    shift
-                    _fpak_fakerepo_build "$@"
-                    ;;
-                docker)
-                    shift
-                    _fpak_fakerepo_docker "$@"
-                    ;;
-                *)
-                    echo "Usage: fpak fake-repo <build|docker> [args]"
-                    echo
-                    echo "Pass no argument like 'fpak fake-repo build' to see usage of subcommands."
-                    return 0
-                    ;;
-            esac
+        m|merge)
+            _fpak_cmd_merge "$@"
+            ;;
+        commits)
+            _fpak_cmd_commits "$@"
+            ;;
+        use)
+            _fpak_cmd_use "$@"
+            ;;
+        docker)
+            _fpak_cmd_docker "$@"
+            ;;
+        l|ls)
+            _fpak_cmd_ls "$@"
             ;;
         o|ostree)
-            shift
-            local repo_dir="${_RMI_WORK_DIR}/flatpak/${1}/repo"
-            if [[ "$1" == -h  || "$1" == --help ]]
-            then
-                echo "Usage: fpak o|ostree <repo-name> <ostree command> [ostree args]"
-                echo
-                echo "run 'fpak ex ls' to list available flatpak repos"
-                return 0
-            fi
-            if [[ ! -d "$repo_dir" ]]
-            then
-                echo "No flatpak repo found, please extract a flatpak file first."
-                echo
-                echo "run 'fpak ex ls' to list available flatpak repos"
-                return 1
-            fi
-            shift
-            ostree --repo="$repo_dir" "$@"
+            _fpak_cmd_ostree "$@"
             ;;
-        ex|extract)
-            shift
+        r|repo)
             case "$1" in
-                repo)
+                f|first)
                     shift
-                    _fpak_ex_repo "$@"
+                    _fpak_cmd_repo_first "$@"
                     ;;
-                file)
+                l|last)
                     shift
-                    _fpak_ex_file "$@"
+                    _fpak_cmd_repo_last "$@"
                     ;;
-                ls)
+                n|nth)
                     shift
-                    _fpak_ex_ls "$@"
+                    _fpak_cmd_repo_nth "$@"
+                    ;;
+                rb|rebuild)
+                    shift
+                    _fpak_cmd_repo_rebuild "$@"
                     ;;
                 *)
-                    echo "Usage: flatpak ex|extract <command> [args]"
-                    echo
-                    echo "Available commands:"
-                    echo "  repo <path-to-flatpak-file>  - Extract flatpak repo from file"
-                    echo "  file <path-to-flatpak-file>  - Extract flatpak file to directory"
-                    echo "  ls [--full]                  - List extracted flatpak repos"
-                    echo "                                   --full: show full path"
-                    return 0
+                    _fpak_help
                     ;;
             esac
             ;;
         *)
-            "$FLATPAK_BIN" "$@"
+            _fpak_help
             ;;
-        esac
+    esac
 }
 
-function _fpak_fakerepo_build() {
-    local repo_dir="${_RMI_WORK_DIR}/flatpak/${1}/repo"
-    if [[ -z "$1" || ! -d "$repo_dir" ]]; then
-        echo "Helper for running 'flatpak build-update-repo'"
-        echo 
-        echo "Usage: fpak fake-repo build <repo-name>"
-        return 1
-    fi
-    flatpak build-update-repo --generate-static-deltas "$repo_dir"
+function _fpak_base_path() {
+    echo "${_RMI_WORK_DIR}/flatpak/${1}"
 }
 
-function _fpak_fakerepo_docker() {
-    which docker >/dev/null 2>&1 || {
-        echo "docker not found, please install docker"
-        return 1
-    }
+function _fpak_repo_path() {
+    echo "$(_fpak_base_path "$1")/repo"
+}
 
-    local port="8080"
-    local repo_name=""
-    local localhost_only=""
-
-    if [[ -z "$1" ]];
+function _fpak_cmd_ostree() {
+    if [[ -z "$1" ]]
     then
-        echo "Usage: fpak fake-repo docker [-p|--port <port>] [-l|--localhost-only] <-r|--repo repo-name>"
-        echo
-        echo "Default port is 8080."
-        echo "If --localhost-only is specified, the repo will only be accessible from localhost."
+        _fpak_help
         return 1
     fi
+    local repo_path="$(_fpak_repo_path "$1")"
+    shift
+    ostree --repo="$repo_path" "$@"
+}
 
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -p|--port)
-                shift
-                if [[ -z "$1" || ! "$1" =~ ^[0-9]+$ ]]; then
-                    echo "Invalid port number: $1"
-                    return 1
-                fi
-                port="$1"
+function _fpak_commit_ids() {
+    (
+        local repo_path="$(_fpak_repo_path "$1")"
+        cd "$repo_path" || return 1
+        find . -type f -name "*.commit" | while read -r commit_file
+        do
+            echo "$(basename "$(dirname "$commit_file")")$(basename "$commit_file" .commit)"
+        done
+    )
+}
+
+function _fpak_current_info() {
+    local cmd="$1"
+    shift
+    (
+        set -e
+        case "$cmd" in
+            name)
+                fpak ostree "$1" show "$2" | grep -F Name: | cut -d ':' -f 2- | xargs
                 ;;
-            -r|--repo)
-                shift
-                repo_name="$1"
+            arch)
+                fpak ostree "$1" show "$2" | grep -F Arch: | cut -d ':' -f 2- | xargs
                 ;;
-            -l|--localhost-only)
-                localhost_only="127.0.0.1:"
+            branch)
+                fpak ostree "$1" show "$2" | grep -F Branch: | cut -d ':' -f 2- | xargs
+                ;;
+            head)
+                local name="$(_fpak_current_info name "$@")"
+                local arch="$(_fpak_current_info arch "$@")"
+                local branch="$(_fpak_current_info branch "$@")"
+                echo "app/${name}/${arch}/${branch}"
                 ;;
             *)
-                echo "Usage: fpak fake-repo docker [-p|--port <port>] [-l|--localhost-only] <-r|--repo repo-name>"
-                echo
-                echo "Default port is 8080."
-                echo "If --localhost-only is specified, the repo will only be accessible from localhost."
+                set +e
                 return 1
+                ;;
+        esac
+    )
+}
+
+function _fpak_cmd_merge() {
+    if [[ -z "$1" || ! -f "$1" ]]; then
+        _fpak_help
+        return 1
+    fi
+
+    local flatpak_file="$1"
+    local _b_n="$(basename "$flatpak_file" .flatpak)"
+    local base_name="$(echo "$_b_n" | cut -d '-' -f 1)-$(echo "$_b_n" | cut -d '-' -f 3)"
+    local repo_path="$(_fpak_repo_path "$base_name")"
+
+    # create and initialize the repository if it does not exist
+    local new=0
+    mkdir -p "$repo_path"
+    if [[ ! -f "${repo_path}/config" ]]
+    then
+        fpak ostree "$base_name" init --mode=archive-z2 || return 1
+        new=1
+    fi
+
+    # extract the single-file bundle into the repository
+    fpak ostree "$base_name" static-delta apply-offline "$flatpak_file" || return $?
+
+    if [[ $new -eq 1 ]]
+    then
+        fpak use "$base_name" || return $?
+    fi
+}
+
+function _fpak_cmd_extract() {
+    if [[ -z "$1" || ! -f "$1" ]]; then
+        _fpak_help
+        return 1
+    fi
+
+    local _b_n="$(basename "$1" .flatpak)"
+    local base_name="$(echo "$_b_n" | cut -d '-' -f 1)-$(echo "$_b_n" | cut -d '-' -f 3)"
+    local repo_path="$(_fpak_repo_path "$base_name")"
+    rm -fr "$repo_path"
+
+    fpak merge "$1" || return $?
+}
+
+function _fpak_cmd_commits() {
+    local repo_path="$(_fpak_repo_path "$1")"
+    if [[ ! -d "$repo_path" ]]; then
+        _fpak_help
+        return 1
+    fi
+    
+    _fpak_commit_ids "$1" | while read -r commit_id
+    do
+        local info="$(fpak ostree "$1" show "$commit_id")"
+        echo "$info" | grep -F "Name:" > /dev/null 2>&1 || continue
+
+        echo "$info"
+        echo
+    done
+}
+
+function _fpak_cmd_use() {
+    if [[ -z "$1" ]]; then
+        _fpak_help
+        return 1
+    fi
+
+    local repo_name="$1"
+    local repo_path="$(_fpak_repo_path "$repo_name")"
+    if [[ ! -d "$repo_path" ]]; then
+        _fpak_help
+        return 1
+    fi
+
+    echo -n "Using commit ... "
+
+    local commit_id="$2"
+    if [[ -z "$commit_id" ]]
+    then
+        local target_date="$(
+        fpak commits "$repo_name" \
+            | grep -F "Date:" \
+            | cut -d ':' -f 2- \
+            | xargs \
+            | sort -r \
+            | head -n 1
+)"
+        _fpak_commit_ids "$repo_name" | while read -r commit
+        do
+            fpak ostree "$repo_name" show "$commit" \
+                | grep -F "Name:" > /dev/null 2>&1 \
+                || continue
+            fpak ostree "$repo_name" show "$commit" \
+                | grep -F "$target_date" > /dev/null 2>&1 \
+                && commit_id="$commit" \
+                && break
+        done
+    fi
+
+    if [[ -z "$commit_id" ]]; then
+        echo "not found."
+        return 1
+    fi
+    echo "$commit_id"
+
+    local dest="$(_fpak_repo_path "$1")/refs/heads/$(_fpak_current_info head "$1")"
+    mkdir -p "$(dirname "$dest")"
+    echo -n "$commit_id" > "$dest"
+}
+
+function _fpak_cmd_repo_rebuild() {
+    if [[ -z "$1" ]]; then
+        _fpak_help
+        return 1
+    fi
+
+    local repo_name="$1"
+    local repo_path="$(_fpak_repo_path "$repo_name")"
+    if [[ ! -d "$repo_path" ]]; then
+        _fpak_help
+        echo
+        echo "Repository '$repo_name' does not exist."
+        return 1
+    fi
+
+    echo "Rebuilding repository '$repo_name' ..."
+    flatpak build-update-repo --generate-static-deltas "$repo_path"
+}
+
+function _fpak_cmd_docker() {
+    if [[ -z "$1" ]]; then
+        _fpak_help
+        return 1
+    fi
+    repo_name="$1"
+    shift
+
+    local repo_path="$(_fpak_repo_path "$repo_name")"
+    if [[ ! -d "$repo_path" ]]; then
+        _fpak_help
+        return 1
+    fi
+
+    local port=8080
+    local bind=''
+    while [[ $# -gt 0 ]]
+    do
+        case "$1" in
+            --port)
+                shift
+                port="$1"
+                ;;
+            --local)
+                bind='127.0.0.1:'
+                ;;
+            *)
+                break
                 ;;
         esac
         shift
     done
-    
-    local repo_dir="${_RMI_WORK_DIR}/flatpak/${repo_name}/repo"
-    if [[ ! -d "$repo_dir" ]]; then
-        echo "Flatpak repo '$repo_name' not found in ${_RMI_WORK_DIR}/flatpak/"
-        echo
-        echo "Run 'fpak ex ls' to list available flatpak repos."
-        return 1
-    fi
-    
-    # _fpak_fakerepo_build "$repo_name" || {
-    #     echo "Failed to run 'fpak fake-repo build ${repo_name}'"
-    #     return $?
-    # }
-    local app_name="$(fpak o "${repo_name}" refs | grep -F app/ | cut -d '/' -s -f 2)"
 
-    echo
-    echo
-    echo -n "Starting nginx in background ... "
+    fpak repo rebuild "$repo_name" || return $?
+
+    echo -n "Starting nginx server on port ${bind}${port} ..."
     local docker_id="$(docker run --rm -d \
-        -v "${repo_dir}:/usr/share/nginx/html:ro" \
-        -p "${localhost_only}${port}:80" \
-        nginx)" || {
-        echo 
-        echo "Failed to start nginx container."
-        return 1
+        -p "${bind}${port}":80 \
+        -v "${repo_path}:/usr/share/nginx/html:ro" \
+        nginx 2>/dev/null
+    )" || {
+        local ret=$?
+        echo "failed."
+        echo "$docker_id"
+        return $ret
     }
-    echo "done."
-
+    echo "$docker_id" | cut -c -12
+    
     echo
     echo "You can run the following command to access the flatpak repo:"
-    echo "  flatpak remote-add --user --if-not-exists --no-gpg-verify test http://localhost:${port}"
+    echo "    flatpak remote-add --user --if-not-exists --no-gpg-verify test http://localhost:${port}"
     echo
 
     alias fpak-docker-stop="docker stop $(echo "$docker_id" | cut -c -12)"
-
     echo "To stop the nginx container, run:"
-    echo "  docker stop $(echo "$docker_id" | cut -c -12)"
+    echo "    docker stop $(echo "$docker_id" | cut -c -12)"
     echo "A special alias 'fpak-docker-stop' is created for convenience."
     echo
+
+    alias fpak-install="flatpak install --reinstall --user test '$(fpak o "${repo_name}" refs | grep -F app/ | cut -d '/' -s -f 2)'"
     echo "To install you app, run:"
-    echo "  flatpak install --user test '$(fpak o "${repo_name}" refs | grep -F app/ | cut -d '/' -s -f 2)'"
-    
+    echo "    flatpak install --user test '$(fpak o "${repo_name}" refs | grep -F app/ | cut -d '/' -s -f 2)'"
+    echo "A special alias 'fpak-install' is created for convenience."
 }
 
-function _fpak_ex_ls() {
-    local base_dir="${_RMI_WORK_DIR}/flatpak"
-    if [[ ! -d "$base_dir" ]]; then
-        echo "No flatpak files extracted yet."
-        return 0
+function _fpak_cmd_ls() {
+    local full=0
+    if [[ "$1" == "--full" ]]
+    then
+        full=1
     fi
-    local opt="$1"
-
-    find "$base_dir" -mindepth 2 -maxdepth 2 -type d -name "repo" | while read -r repo; do
-        if [[ "$opt" == "--full" ]]; then
-            echo "$repo"
-            continue
+    
+    find "${_RMI_WORK_DIR}/flatpak" -mindepth 1 -maxdepth 1 -type d \
+        | while read -r repo_dir
+    do
+        if [[ $full -eq 1 ]]
+        then
+            echo "${repo_dir}/repo"
+        else
+            echo "$(basename "$repo_dir")"
         fi
-        echo "$(basename "$(dirname "$repo")")"
     done
 }
 
-function _fpak_ex_repo() {
-    if [[ -z "$1" || ! -f "$1" ]]; then
-        echo "Usage: flatpak extract repo <path-to-flatpak-file>"
-        return 1
-    fi
-
-    local flatpak_file="$1"
-    local base_name="$(basename "$flatpak_file" .flatpak)"
-    local base_dir="${_RMI_WORK_DIR}/flatpak/${base_name}"
-    local repo_dir="${base_dir}/repo"
-
-    rm -fr "$repo_dir" > /dev/null 2>&1
-    mkdir -p "$repo_dir"
-    ostree init --repo="$repo_dir" --mode=archive-z2
-    ostree static-delta apply-offline --repo="$repo_dir" "$flatpak_file"
-    (
-        cd "$repo_dir"
-        ls objects/*/*.commit
-    ) | \
-        cut -d '/' -f2-3 -s | \
-        sed 's#/##' | \
-        sed 's/\.commit$//' \
-            > "${repo_dir}/refs/heads/fake"
-
-    local info="$(fpak o "${base_name}" show fake)"
-    local name="$(echo "$info" | grep -F Name: | cut -d ':' -f2 | xargs)"
-    local arch="$(echo "$info" | grep -F Arch: | cut -d ':' -f2 | xargs)"
-    local branch="$(echo "$info" | grep -F Branch: | cut -d ':' -f2 | xargs)"
-    mkdir -p "${repo_dir}/refs/heads/app/${name}/${arch}"
-    cp "${repo_dir}/refs/heads/fake" "${repo_dir}/refs/heads/app/${name}/${arch}/${branch}"
-    
-    echo "Flatpak repo ${repo_dir} created from $flatpak_file"
-    echo "run 'fpak o \"${base_name}\" refs' to see available refs."
+function _fpak_list_repo() {
+    local full="--full"
+    _has_arg "--full" "$@" || _has_arg "-f" "$@" || full=""
+    fpak ls "$full"
 }
 
-function _fpak_ex_file() {
-    if [[ -z "$1" || ! -f "$1" ]]; then
-        echo "Usage: flatpak extract file <path-to-flatpak-file>"
-        return 1
-    fi
-
-    local flatpak_file="$1"
-    local base_dir="${_RMI_WORK_DIR}/flatpak/$(basename "$flatpak_file" .flatpak)"
-    local repo_dir="${base_dir}/repo"
-    local dest_dir="${base_dir}/extracted"
-
-    if [[ ! -d "$repo_dir" ]]; then
-        _extract_flatpak_repo "$flatpak_file" || return $?
-    fi
-
-    rm -fr "$dest_dir" > /dev/null 2>&1
-    ostree --repo="$repo_dir" checkout -U fake "$dest_dir"
-    echo "Extracted $flatpak_file to $dest_dir"
+function _fpak_cmd_repo_first() {
+    _fpak_list_repo "$@" | head -n 1
 }
 
-function first_fpak_repo() {
-    fpak ex ls "$@"| head -n 1
+function _fpak_cmd_repo_last() {
+    _fpak_list_repo "$@" | tail -n 1
 }
 
-function last_fpak_repo() {
-    fpak ex ls "$@"| tail -n 1
-}
-
-function nth_fpak_repo() {
+function _fpak_cmd_repo_nth() {
     local n="$1"
     shift
-    fpak ex ls "$@"| sed -n "${n}p"
+    if [[ -z "$n" || ! "$n" =~ ^[0-9]+$ ]]
+    then
+        _fpak_help
+        return 1
+    fi
+
+    _fpak_list_repo "$@" | sed -n "${n}p"
 }

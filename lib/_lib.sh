@@ -36,3 +36,17 @@ function _append_if_non_exist {
     fi
     echo "$3" >> "$1"
 }
+
+function _has_arg() {
+    local arg="$1"
+    shift
+
+    for i in "$@"
+    do
+        if [[ "$i" == "$arg" ]]
+        then
+            return 0
+        fi
+    done
+    return 1
+}
