@@ -3,11 +3,6 @@
 
 loadlib node
 
-(
-    cd "$_RMI_WORK_HERE"
-    find . -name 'quasar.config.[jt]s' |grep quasar >/dev/null 2>&1 || echo "No Quasar project found in the current directory. Please run 'create_quasar' to set up a new project."
-)
-
 function _quasar_helper_usage() {
     cat <<EOF
 Usage: q [command] [args...]
@@ -66,7 +61,10 @@ function q() {
             ;;
         b)
             local sub_cmd="$1"
-            shift
+            if [[ $# -gt 0 ]]
+            then
+                shift
+            fi
             case "$sub_cmd" in
                 a)
                     _quasar build -m capacitor -T android "$@"
@@ -87,6 +85,9 @@ function q() {
                     _quasar build "$sub_cmd" "$@"
                     ;;
             esac
+            ;;
+        --)
+            _quasar "$@"
             ;;
         *)
             _quasar "$cmd" "$@"
@@ -115,3 +116,8 @@ function _quasar_cmd_test {
 
     NODE_PM run "test:${joined_string}"
 }
+
+(
+    cd "$_RMI_WORK_HERE"
+    find . -name 'quasar.config.[jt]s' |grep quasar >/dev/null 2>&1 || echo "No Quasar project found in the current directory. Please run 'create_quasar' to set up a new project."
+)
