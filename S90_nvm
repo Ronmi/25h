@@ -17,7 +17,10 @@ function nvm() {
     fi
 }
 
-export PATH="${PATH}:${HOME}/.yarn/bin"
+export PNPM_HOME="${HOME}/.local/share/pnpm"
+export PATH="${PATH}:${HOME}/.yarn/bin:${PNPM_HOME}"
+
+test -d "$PNPM_HOME" && ln -sf "${PNPM_HOME}" "${HOME}/bin/pnpm"
 
 ln -sf "${HOME}/.yarn/bin" "${HOME}/bin/yarn"
 if [[ "$NVM_BIN" != "" ]]
