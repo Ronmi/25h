@@ -24,6 +24,9 @@ Available commands:
             updating pkgsite to the latest version.
     t|test [filter]
             Run tests matching the filter
+    it|install-tools [-a|--all]
+            Install common tools globally, like gopls, protogen, ...
+            Passing -a or --all will not show confirmation.
 EOF
 }
 
@@ -59,10 +62,56 @@ function _run_go_cmd() {
             _go_cmd_test "$@"
             return $?
             ;;
+        it|install-tools)
+            _go_cmd_install_tools "$@"
+            return $?
+            ;;
         *)
             _go_helper_usage
             return 1
     esac
+}
+
+function _go_helper_install_tool() {
+    if [[ $all -eq 1 ]]
+    then
+        echo -n "Installing ${1} ... "
+        local output="$(go install "${1}@latest" 2>&1)"
+        ret=$?
+        if [[ $ret -eq 0 ]]
+        then
+            echo "done."
+        else
+            echo "failed."
+            echo "$output"
+            echo
+            echo
+        fi
+        
+        return $ret
+    fi
+    
+    _confirm "Install ${1}?" && {
+        go install "${1}@latest"
+        return $?
+    } || return 0
+}
+
+function _go_cmd_install_tools() {
+    local all=1
+    _has_arg -a "$@" || _has_arg --all "$@" || all=0
+    (
+        set -e
+        _go_helper_install_tool github.com/charmbracelet/gum
+        _go_helper_install_tool google.golang.org/grpc/cmd/protoc-gen-go-grpc
+        _go_helper_install_tool golang.org/x/tools/gopls
+        _go_helper_install_tool github.com/spf13/cobra-cli
+        
+        for i (callgraph deadcode goimports gomvpkg stringer)
+        do
+            _go_helper_install_tool "golang.org/x/tools/cmd/${i}"
+        done
+    )
 }
 
 function _go_cmd_coverhtml {

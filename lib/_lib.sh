@@ -37,3 +37,28 @@ function _set_helper() {
 
     echo "${name} helper has been installed, run '${cmd_name}' to use it."
 }
+
+function _confirm_shell() {
+    echo -n "$1 [Y/n]" 1>&2
+    read -q ans
+    if [[ "$ans" == "y" ]]
+    then
+        return 0
+    fi
+
+    return 1
+}
+
+function _confirm_gum() {
+    gum confirm "$1" || return $?
+}
+
+function _confirm() {
+    which gum > /dev/null 2>&1 && {
+        _confirm_gum "$1"
+        return $?
+    } || {
+        _confirm_shell "$1"
+        return $?
+    }
+}
