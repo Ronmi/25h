@@ -80,5 +80,5 @@ function cover {
     )
 }
 
-find "${_RMI_WORK_DIR}" -name Cargo.toml | grep -F Cargo.toml > /dev/null 2>&1 || \
+find "${_RMI_WORK_HERE}" -name Cargo.toml | grep -F Cargo.toml > /dev/null 2>&1 || \
     echo "You have not set up your Rust workspace yet. Please run 'cargo init' or 'cargo new' in your project directory."
