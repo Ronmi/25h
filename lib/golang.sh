@@ -152,3 +152,58 @@ function _go_cmd_test {
 
 find "${_RMI_WORK_HERE}" -name go.mod | grep -F go.mod > /dev/null 2>&1 || \
     echo "You have not set up your Go workspace yet. Please run 'go mod init' in your project directory."
+
+
+
+
+
+###### completions for the helper
+
+#compdef _run_go_cmd
+function __run_go_cmd_completions() {
+    typeset -a commands args
+    commands+=(
+        'c:Generate HTML coverage report'
+        'coverhtml:Generate HTML coverage report'
+        'coverfunc:Generate function coverage report'
+        'b:Run benchmarks'
+        'bench:Run benchmarks'
+        'benchsome:Run benchmarks matching the filter'
+        'd:Start a local documentation server for Go packages'
+        'doc:Start a local documentation server for Go packages'
+        't:Run tests matching the filter'
+        'test:Run tests matching the filter'
+        'it:Install common tools globally'
+        'install-tools:Install common tools globally'
+    )
+    case $state in
+        command)
+            _describe -t commands 'commands' commands
+            return 0
+            ;;
+    esac
+
+    echo "${words[@]}" > /tmp/asd
+    case ${words[2]} in
+        d|doc)
+            _arguments \
+                '1: :->command' \
+                _arguments \
+                '1: :->command' \
+                '-u[Force update pkgsite to the latest version]' \
+                '--force-update[Force update pkgsite to the latest version]' 
+            ;;
+        it|install-tools)
+            _arguments \
+                '1: :->command' \
+                '-a[Install all tools without confirmation]' \
+                '--all[Install all tools without confirmation]'
+            ;;
+        *)
+            _arguments \
+                '1: :->command' \
+                '*:: :->args'
+            ;;
+    esac
+}
+compdef __run_go_cmd_completions _run_go_cmd "$_go_cmd"
