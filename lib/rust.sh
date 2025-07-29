@@ -5,6 +5,10 @@
 #
 # these helpers requires you to install rust toolchains using rustup with default settings
 
+# install rusup completions if not already installed
+eval "$(rustup completions zsh)"
+source "$(rustup run ${${(z)$(rustup default)}[1]} rustc --print sysroot)/share/zsh/site-functions/_cargo" > /dev/null 2>&1
+
 alias b="cargo build"
 alias t="cargo test"
 alias r="cargo run"
@@ -82,3 +86,4 @@ function cover {
 
 find "${_RMI_WORK_HERE}" -name Cargo.toml | grep -F Cargo.toml > /dev/null 2>&1 || \
     echo "You have not set up your Rust workspace yet. Please run 'cargo init' or 'cargo new' in your project directory."
+
