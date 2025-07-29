@@ -77,7 +77,8 @@ else
             echo "Example: init_workhere golang quasar"
             echo
             echo "Supported helpers:"
-            find "${HOME}/.zsh.d/lib" -name '[a-z0-9]*.sh' -exec bash -c 'echo -n "  " ; basename "{}" | sed "s/[.]sh//"; echo -n "    " ; head -n 2 "{}" | tail -n 1' ';'
+            find "${HOME}/.zsh.d/lib" -name '[a-z0-9]*.sh' -exec bash -c "echo -n '  ' ; echo '{}' | sed 's#${HOME}/.zsh.d/lib/##' | sed 's/[.]sh//' ; echo -n '    '; head -n 2 '{}' | tail -n 1" ';'
+
             return 1
         fi
 
