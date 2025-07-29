@@ -1,10 +1,10 @@
 #!/usr/bin/zsh -f
-# quasar framework (vue3) helper, depends on "node" helper, run "quasar" for help
+# quasar framework (vue3) helper, depends on "node" helper, run "q" for help
 
 loadlib _lib
 loadlib node
 
-_quasar_cmd="${_quasar_cmd_name:=quasar}"
+_quasar_cmd="${_quasar_cmd_name:=q}"
 _set_helper "$_quasar_cmd" Quasar _run_quasar_cmd
 
 function _quasar_helper_usage() {
