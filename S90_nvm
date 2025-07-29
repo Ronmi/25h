@@ -27,3 +27,11 @@ if [[ "$NVM_BIN" != "" ]]
 then
     ln -sf "$NVM_BIN" "${HOME}/bin/node"
 fi
+
+# install pnpm completions if not already installed
+which pnpm >/dev/null 2>&1 && {
+    test -f "${HOME}/.zfunc/_pnpm" || {
+        pnpm completion zsh > "${HOME}/.zfunc/_pnpm"
+        source "${HOME}/.zfunc/_pnpm"
+    }
+}
