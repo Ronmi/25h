@@ -125,3 +125,66 @@ function _quasar_cmd_test {
     cd "$_RMI_WORK_HERE"
     find . -name 'quasar.config.[jt]s' |grep quasar >/dev/null 2>&1 || echo "No Quasar project found in the current directory. Please run 'create_quasar' to set up a new project."
 )
+
+
+
+
+###### completions for the helper
+
+#compdef _run_quasar_cmd
+function __run_quasar_cmd_completions() {
+    typeset -a commands args
+    commands+=(
+        'init:Create a new Quasar project'
+        'it:Install Quasar CLI and IconGenie as dev dependencies'
+        'install-tool:Install Quasar CLI and IconGenie as dev dependencies'
+        'icongenie:Run IconGenie commands'
+        't:Run Quasar tests'
+        'test:Run Quasar tests'
+        'b:Build Quasar app'
+        '--:Passes all arguments to the quasar command'
+    )
+    case $state in
+        command)
+            _describe -t commands 'commands' commands
+            return 0
+            ;;
+    esac
+
+    case ${words[2]} in
+        b)
+            if [[ ${#words} -eq 3 ]]; then
+                typeset -a build_commands
+                build_commands+=(
+                    'a:Build Android app with Capacitor'
+                    'e:Build Electron app'
+                    'x:Build Browser Extension (BEX)'
+                    'p:Build Progressive Web App (PWA)'
+                    's:Build Server-Side Rendered (SSR) app'
+                )
+                _describe -t build_commands 'build commands' build_commands
+                return 0
+            fi
+            _arguments \
+                '1: :->command' \
+                '*:: :->args'
+            ;;
+        t|test)
+            _arguments \
+                '1: :->command' \
+                '*:: :->args'
+            ;;
+        icongenie)
+            _arguments \
+                '1: :->command' \
+                '*:: :->args'
+            ;;
+        *)
+            _arguments \
+                '1: :->command' \
+                '*:: :->args'
+            ;;
+    esac
+}
+compdef __run_quasar_cmd_completions _run_quasar_cmd "$_quasar_cmd"
+
