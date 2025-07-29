@@ -434,3 +434,129 @@ function _fpak_cmd_repo_nth() {
 
     _fpak_list_repo "$@" | sed -n "${n}p"
 }
+
+
+
+
+###### completions for the helper
+
+#compdef _run_fpak_cmd
+function __run_fpak_cmd_completions() {
+    typeset -a commands args
+    commands+=(
+        'e:Extracts a single-file bundle (SFB) as ostree repository'
+        'extract:Extracts a single-file bundle (SFB) as ostree repository'
+        'm:Extracts and merges a single-file bundle (SFB)'
+        'merge:Extracts and merges a single-file bundle (SFB)'
+        'commits:Lists commits in the specified ostree repository'
+        'use:Sets the specified commit as current version'
+        'docker:Creates a nginx server (with docker) to serve the repository'
+        'l:Lists extracted repository'
+        'ls:Lists extracted repository'
+        'o:Runs an ostree command on the specified repository'
+        'ostree:Runs an ostree command on the specified repository'
+        'r:Repository management commands'
+        'repo:Repository management commands'
+        'h:Displays help message'
+        'help:Displays help message'
+    )
+    case $state in
+        command)
+            _describe -t commands 'commands' commands
+            return 0
+            ;;
+    esac
+
+    case ${words[2]} in
+        e|extract|m|merge)
+            _arguments \
+                '1: :->command' \
+                '2:flatpak file:_files -g "*.flatpak"'
+            ;;
+        commits|use|o|ostree|docker)
+            typeset -a repos
+            repos=($(find "${_RMI_WORK_DIR}/flatpak" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null))
+            case ${words[2]} in
+                commits)
+                    _arguments \
+                        '1: :->command' \
+                        "2:repository:($repos)"
+                    ;;
+                use)
+                    _arguments \
+                        '1: :->command' \
+                        "2:repository:($repos)" \
+                        '3:commit_id:'
+                    ;;
+                o|ostree)
+                    _arguments \
+                        '1: :->command' \
+                        "2:repository:($repos)" \
+                        '3:ostree command:' \
+                        '*:: :->args'
+                    ;;
+                docker)
+                    _arguments \
+                        '1: :->command' \
+                        "2:repository:($repos)" \
+                        '--port[Specify port]:port:' \
+                        '--local[Bind to loopback address]'
+                    ;;
+            esac
+            ;;
+        l|ls)
+            _arguments \
+                '1: :->command' \
+                '--full[Show full path to the repository]'
+            ;;
+        r|repo)
+            if [[ ${#words} -eq 3 ]]; then
+                typeset -a repo_commands
+                repo_commands+=(
+                    'f:Just a shortcut for fpak l --full | head -n 1'
+                    'first:Just a shortcut for fpak l --full | head -n 1'
+                    'l:Just a shortcut for fpak l --full | tail -n 1'
+                    'last:Just a shortcut for fpak l --full | tail -n 1'
+                    'n:Just a shortcut for fpak l --full | sed -n Np'
+                    'nth:Just a shortcut for fpak l --full | sed -n Np'
+                    'rb:Rebuilds the specified repository'
+                    'rebuild:Rebuilds the specified repository'
+                )
+                _describe -t repo_commands 'repo commands' repo_commands
+                return 0
+            else
+                case ${words[3]} in
+                    f|first|l|last)
+                        _arguments \
+                            '1: :->command' \
+                            '2: :->repo_command' \
+                            '-f[Show full path]' \
+                            '--full[Show full path]'
+                        ;;
+                    n|nth)
+                        _arguments \
+                            '1: :->command' \
+                            '2: :->repo_command' \
+                            '3:number:' \
+                            '-f[Show full path]' \
+                            '--full[Show full path]'
+                        ;;
+                    rb|rebuild)
+                        typeset -a repos
+                        repos=($(find "${_RMI_WORK_DIR}/flatpak" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null))
+                        _arguments \
+                            '1: :->command' \
+                            '2: :->repo_command' \
+                            "3:repository:($repos)"
+                        ;;
+                esac
+            fi
+            ;;
+        *)
+            _arguments \
+                '1: :->command' \
+                '*:: :->args'
+            ;;
+    esac
+}
+compdef __run_fpak_cmd_completions _run_fpak_cmd "$_flatpak_cmd"
