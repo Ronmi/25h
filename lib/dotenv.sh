@@ -6,6 +6,10 @@ if [[ "$_RMI_DOTENV_AUTOLOAD" == "1" && -f "${_RMI_WORK_HERE}/.env" ]]
 then
     source "${_RMI_WORK_HERE}/.env"
 fi
+if [[ "$_RMI_DOTENV_AUTOLOAD" != "" && -f "$_RMI_DOTENV_AUTOLOAD" ]]
+then
+    source "$_RMI_DOTENV_AUTOLOAD"
+fi
 
 # create a subshell and load .env.
 function useenv() {
