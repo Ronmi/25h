@@ -5,16 +5,32 @@ then
     export NVM_DIR="${HOME}/.nvm"
 fi
 
-function nvm() {
+function __use_nvm() {
     if [[ -s "${NVM_DIR}/nvm.sh" ]]
     then
-        unset -f nvm
+        unset -f npm npx nvm node
         . "${NVM_DIR}/nvm.sh"
-        nvm "$@"
+        return 0
     else
         echo "nvm not found in ${NVM_DIR}"
         return 1
     fi
+}
+
+function node() {
+    __use_nvm && node "$@"
+}
+
+function nvm() {
+    __use_nvm && nvm "$@"
+}
+
+function npm() {
+    __use_nvm && npm "$@"
+}
+
+function npx() {
+    __use_nvm && npx "$@"
 }
 
 export PNPM_HOME="${HOME}/.local/share/pnpm"
