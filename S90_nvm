@@ -8,7 +8,7 @@ fi
 function __use_nvm() {
     if [[ -s "${NVM_DIR}/nvm.sh" ]]
     then
-        unset -f npm npx nvm node
+        unset -f npm npx nvm node pnpm pnpx yarn
         . "${NVM_DIR}/nvm.sh"
         return 0
     else
@@ -31,6 +31,18 @@ function npm() {
 
 function npx() {
     __use_nvm && npx "$@"
+}
+
+function yarn() {
+    __use_nvm && yarn "$@"
+}
+
+function pnpm() {
+    __use_nvm && pnpm "$@"
+}
+
+function pnpx() {
+    __use_nvm && pnpx "$@"
 }
 
 export PNPM_HOME="${HOME}/.local/share/pnpm"
