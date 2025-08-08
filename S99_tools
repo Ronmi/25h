@@ -1,0 +1,75 @@
+#!/usr/bin/zsh -f
+
+function rmi_install_tools() {
+    (
+        source "${HOME}/.zsh.d/lib/_lib.sh"
+
+        function _check() {
+            local tool="$1"
+            shift
+            local cmd="$1"
+            shift
+            local repo="$1"
+            shift
+            echo "${cmd}"
+            echo "          " "$@"
+            echo -n "          " "Checking ... "
+            whence -p "$tool" > /dev/null 2>&1 || {
+                echo "need '${tool}', skipped."
+                return 1
+            }
+            whence -p "$1" > /dev/null 2>&1 || {
+                echo "not found."
+                return 0
+            }
+
+            echo installed.
+            return 1
+        }
+
+        cat <<EOF
+This function installs suggested tools from source.
+
+If any of the tools below are skipped due to missing build tools, you wiil be
+prompted to install them (a quoted command like 'go' or 'rustup'). You might also
+need build tools like make, gcc, etc. (can be installed in your distro's package
+manager) to make rustup work.
+
+If you don't want to install from source, reach to the repo for instructions about
+how to install pre-built binaries (like downloading from releases page or using
+a package manager).
+
+EOF
+
+        _check "go" "gum" \
+               "https://github.com/charmbracelet/gum" \
+               "fancy CLI UI toolset like confirm, select and more" && {
+            _confirm "Install gum?" && go install github.com/charmbracelet/gum@latest
+        }
+        _check "rustup" "bat" \
+               "https://github.com/sharkdp/bat" \
+               "cat clone with syntax highlighting and Git integration" && {
+            _confirm "Install bat?" && cargo install bat
+        }
+        _check "rustup" "lsd" \
+               "https://github.com/lsd-rs/lsd" \
+               "ls clone with colors and icons (need special font)" && {
+            _confirm "Install lsd?" && cargo install lsd
+        }
+        _check "rustup" "starship" \
+               "https://github.com/starship/starship" \
+               "modern tool for managing your shell prompt" && {
+            _confirm "Install starship?" && cargo install starship
+        }
+        _check "rustup" "ripgrep" \
+               "https://github.com/BurntSushi/ripgrep" \
+               "fast search tool like grep, but with more features" && {
+            _confirm "Install ripgrep?" && cargo install ripgrep
+        }
+        _check "rustup" "fd" \
+               "https://github.com/sharkdp/fd" \
+               "fast and user-friendly alternative to find" && {
+            _confirm "Install fd?" && cargo install fd-find
+        }
+    )
+}
