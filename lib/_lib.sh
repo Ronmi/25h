@@ -40,13 +40,11 @@ function _set_helper() {
 
 function _confirm_shell() {
     echo -n "$1 [Y/n]" 1>&2
-    read -q ans
-    if [[ "$ans" == "y" ]]
-    then
-        return 0
-    fi
-
-    return 1
+    read -q ans || {
+        local err=$?
+        echo 1>&2
+        return $err
+    }
 }
 
 function _confirm_gum() {
