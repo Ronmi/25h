@@ -19,7 +19,7 @@ then
 fi
 
 export PATH="${GOPATH}/bin:${PATH}"
-ln -sf "${GOPATH}/bin" "${HOME}/bin/golang"
+ln -sfT "${GOPATH}/bin" "${HOME}/bin/golang"
 
 if [[ -d "${HOME}/golang" ]]
 then
@@ -49,6 +49,6 @@ function download_new_go {
         set -e
         mkdir -p "${HOME}/golang/${ver}"
         curl -sSL "https://go.dev/dl/${fn}" | tar zxvf - -C "${HOME}/golang/${ver}" --strip-components 1
-        ln -sf "${HOME}/golang/${ver}/bin/go" "${HOME}/bin/go"
+        ln -sfT "${HOME}/golang/${ver}/bin/go" "${HOME}/bin/go"
     )
 }

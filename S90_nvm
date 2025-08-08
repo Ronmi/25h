@@ -36,12 +36,12 @@ function npx() {
 export PNPM_HOME="${HOME}/.local/share/pnpm"
 export PATH="${PATH}:${HOME}/.yarn/bin:${PNPM_HOME}"
 
-test -d "$PNPM_HOME" && ln -sf "${PNPM_HOME}" "${HOME}/bin/pnpm"
+test -d "$PNPM_HOME" && ln -sfT "${PNPM_HOME}" "${HOME}/bin/pnpm"
 
-ln -sf "${HOME}/.yarn/bin" "${HOME}/bin/yarn"
+ln -sfT "${HOME}/.yarn/bin" "${HOME}/bin/yarn"
 if [[ "$NVM_BIN" != "" ]]
 then
-    ln -sf "$NVM_BIN" "${HOME}/bin/node"
+    ln -sfT "$NVM_BIN" "${HOME}/bin/node"
 fi
 
 # install pnpm completions if not already installed

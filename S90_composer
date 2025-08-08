@@ -1,4 +1,4 @@
 #!/usr/bin/zsh -f
 
 export PATH="${PATH}:${HOME}/.config/composer/vendor/bin"
-ln -sf "${HOME}/.config/composer/vendor/bin" "${HOME}/bin/composer"
+ln -sfT "${HOME}/.config/composer/vendor/bin" "${HOME}/bin/composer"
