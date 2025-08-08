@@ -6,19 +6,20 @@ then
     ln -sfT "${HOME}/.cargo/bin" "${HOME}/bin/cargo"
 else
     function rustup {
-        case $1 in
-            install)
-                echo 'installing rustup ... '
-                curl -sSL https://sh.rustup.rs | sh || return $?
-                echo
-                echo
-                echo 'rustup installed!'
-                unset -f rustup
-                exec $SHELL
-                ;;
-            *)
-                echo "rustup not found, run 'rustup install' to install"
-                ;;
-        esac
+        whence -p rustup >/dev/null && {
+            unset -f rustup
+            rustup "$@"
+            return $?
+        }
+
+        (
+            source "${HOME}/.zsh.d/lib/_lib.sh"
+            _confirm "rustup is not installed. Do you want to install it?" || return 1
+            curl -sSL https://sh.rustup.rs | sh || return $?
+        ) && {
+            unset -f rustup
+            export PATH="${PATH}:${HOME}/.cargo/bin"
+            ln -sfT "${HOME}/.cargo/bin" "${HOME}/bin/cargo"
+        }
     }
 fi
