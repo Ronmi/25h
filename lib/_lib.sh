@@ -39,7 +39,7 @@ function _set_helper() {
 }
 
 function _confirm_shell() {
-    echo -n "$1 [Y/n]" 1>&2
+    echo -n "$1 [y/N]" 1>&2
     read -q ans || {
         local err=$?
         echo 1>&2
