@@ -29,8 +29,17 @@ then
     done
 fi
 
-function download_new_go {
+function go {
+    whence -p go >/dev/null 2>&1 && {
+        unset -f go
+        go "$@"
+        return $?
+    }
+
     (
+        source "${HOME}/.zsh.d/lib/_lib.sh"
+        _confirm "Go is not installed. Do you want to install it now?" || return 0
+
         echo -n "detecting cpu architecture ... "
         arch="$(uname -r | grep -oE -- '-[a-z0-9_]+$' | cut -d '-' -f 2)"
         echo $arch
@@ -50,5 +59,8 @@ function download_new_go {
         mkdir -p "${HOME}/golang/${ver}"
         curl -sSL "https://go.dev/dl/${fn}" | tar zxvf - -C "${HOME}/golang/${ver}" --strip-components 1
         ln -sfT "${HOME}/golang/${ver}/bin/go" "${HOME}/bin/go"
+
+        unset -f go
+        go "$@"
     )
 }
