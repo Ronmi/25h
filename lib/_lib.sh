@@ -1,5 +1,9 @@
 #!/bin/zsh -f
 
+function _has_prog {
+    whence -p "$1" > /dev/null 2>&1
+}
+
 function _has_func {
     whence -w "$1" | cut -d : -f 2 | grep function > /dev/null 2>&1
 }
@@ -16,6 +20,10 @@ function _has_arg() {
         fi
     done
     return 1
+}
+
+function _args_to_json() {
+  printf '%s\n' "$@" | jq -R . | jq -scM .
 }
 
 function _set_helper() {
