@@ -30,7 +30,7 @@ Available commands:
                 pyright: language server with python (pyright-langserver)
 USAGE1
 
-    find "${HOME}/.zsh.d/lib/local" -name "_ai.*.sh" -type f | while read -r fn
+    find "${HOME}/.zsh.d/lib/local" -name "_ai.*.sh" -type f,l | while read -r fn
     do
         local name="$(echo "$fn" | xargs basename | cut -d '.' -f 2)"
         local desc="$(source "$fn" && ai_mcp_desc)"
@@ -318,7 +318,7 @@ function _ai_helper_completions() {
             'tsls:Use language server for TypeScript (typescript-language-server)'
             'pyright:Use language server for Python (pyright-langserver)'
         )
-        find "${HOME}/.zsh.d/lib/local" -name "_ai.*.sh" -type f | while read -r fn
+        find "${HOME}/.zsh.d/lib/local" -name "_ai.*.sh" -type f,l | while read -r fn
         do
             local name="$(echo "$fn" | xargs basename | cut -d '.' -f 2)"
             local desc="$(source "$fn" && ai_mcp_desc)"
