@@ -35,7 +35,7 @@ function ai_mcp_prepare() {
         echo "Failed to connect to GitHub!?"
         return 1
     }
-    [[ -z "$GITHUB_PERSONAL_ACCESS_TOKEN" ]] || {
+    [[ -z "$GITHUB_PERSONAL_ACCESS_TOKEN" ]] && {
         echo "You must set GitHub PAT in GITHUB_PERSONAL_ACCESS_TOKEN variable."
         echo "You can set it in a file and load with 'dotenv' helper automatically."
         return 1
