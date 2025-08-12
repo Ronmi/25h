@@ -35,11 +35,13 @@ function ai_mcp_prepare() {
         echo "Failed to connect to GitHub!?"
         return 1
     }
-    [[ -z "$GITHUB_PERSONAL_ACCESS_TOKEN" ]] && {
+
+    if [[ -z "$GITHUB_PERSONAL_ACCESS_TOKEN" ]]
+    then
         echo "You must set GitHub PAT in GITHUB_PERSONAL_ACCESS_TOKEN variable."
         echo "You can set it in a file and load with 'dotenv' helper automatically."
         return 1
-    }
+    fi
 }
 
 # Generate the MCP server configuration for Claude Code.
