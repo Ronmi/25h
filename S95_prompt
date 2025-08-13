@@ -1,5 +1,22 @@
 #!/usr/bin/zsh -f
 
+# The starship config below (the user-unfriendly base64 string) is my personal
+# configuration. You can generate your own from presets if you have jq, starship and
+# jyt installed. (run "rmi_install_tools" to install jyt and starship from source).
+#
+#    # I like bracketed segments over powerline
+#    starship preset bracketed-segments | jyt t2j > a.json
+#    # nerdfont, of course
+#    starship preset nerd-font-symbols | jyt t2j > b.json
+#    # the "S95_workhere" support
+#    echo '{"custom":{"workhere":{"command":"echo \"[ $(echo -n \"$_RMI_WORK_HERE\"|xargs basename)]\"","description":"You are in a WORKHERE environment of this directory","style":"bright-purple","when":"test ! -z \"$_RMI_WORK_HERE\""}}}' > c.json
+#    # combine them all into a single config
+#    jq -s '.[0] * .[1] * .[2]' a.json b.json c.json | jyt j2t > starship.toml
+#
+# You might have to manually edit the "format" field in the starship.toml, for
+# example, add "${custom.workhere}". See https://starship.rs/config/#prompt for more
+# information.
+
 which starship > /dev/null 2>&1
 if [[ $? == 0 ]]
 then
