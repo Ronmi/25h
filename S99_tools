@@ -71,5 +71,10 @@ EOF
                "fast and user-friendly alternative to find" && {
             _confirm "Install fd?" && cargo install fd-find
         }
+        _check "rustup" "jyt" \
+               "https://github.com/ken-matsui/jyt" \
+               "convert between JSON, TOML and YAML" && {
+            _confirm "Install jyt?" && cargo install jyt
+        }
     )
 }
