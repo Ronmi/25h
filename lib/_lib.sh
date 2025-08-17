@@ -1,10 +1,10 @@
-#!/bin/zsh -f
+#!/usr/bin/zsh -f
 
-function _has_prog {
+function _has_prog() {
     whence -p "$1" > /dev/null 2>&1
 }
 
-function _has_func {
+function _has_func() {
     whence -w "$1" | cut -d : -f 2 | grep function > /dev/null 2>&1
 }
 
@@ -67,4 +67,52 @@ function _confirm() {
         _confirm_shell "$1"
         return $?
     }
+}
+
+##################### color functions
+
+# $1 is a number of color (0-15)
+function _set_fgc() {
+    local base=$1
+    _has_prog tput
+    if [[ $? -eq 0 ]]
+    then
+        tput setaf $base
+    else
+        base=$((base + 30))
+        echo -n "\033[${base}m"
+    fi
+}
+
+# $1 is a number of color (0-15)
+function _set_bgc() {
+    local base=$1
+    _has_prog tput
+    if [[ $? -eq 0 ]]
+    then
+        tput setab $base
+    else
+        base=$((base + 40))
+        echo -n "\033[${base}m"
+    fi
+}
+
+function _font_reset() {
+    _has_prog tput
+    if [[ $? -eq 0 ]]
+    then
+        tput sgr0
+    else
+        echo -n "\033[0m"
+    fi
+}
+
+function _font_bold() {
+    _has_prog tput
+    if [[ $? -eq 0 ]]
+    then
+        tput bold
+    else
+        echo -n "\033[1m"
+    fi
 }
