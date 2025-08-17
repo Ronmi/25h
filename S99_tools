@@ -3,6 +3,8 @@
 function rmi_install_tools() {
     (
         source "${HOME}/.zsh.d/lib/_lib.sh"
+        local update=false
+        _has_arg "-u" "$@" && update=true
 
         function _check() {
             local tool="$1"
@@ -11,6 +13,7 @@ function rmi_install_tools() {
             shift
             local repo="$1"
             shift
+            local prompt="Install ${tool}?"
             echo `_set_fgc 14` \
                  "${cmd}" \
                  `_font_reset`
@@ -28,9 +31,17 @@ function rmi_install_tools() {
                 echo `_set_fgc 11` \
                      "not found." \
                      `_font_reset`
-                return 0
+                _confirm "$prompt"
+                return $?
             }
 
+            if [[ $update == true ]]; then
+                echo "          " \
+                     `_set_fgc 11` \
+                     "forced." \
+                     `_font_reset`
+                return 0
+            fi
             echo `_set_fgc 10` \
                 installed. \
                 `_font_reset`
@@ -49,42 +60,37 @@ If you don't want to install from source, reach to the repo for instructions abo
 how to install pre-built binaries (like downloading from releases page or using
 a package manager).
 
+You can also use the -u option to update tools that are already installed.
+
 EOF
 
         _check "go" "gum" \
                "https://github.com/charmbracelet/gum" \
-               "fancy CLI UI toolset like confirm, select and more" && {
-            _confirm "Install gum?" && go install github.com/charmbracelet/gum@latest
-        }
+               "fancy CLI UI toolset like confirm, select and more" \
+            && go install github.com/charmbracelet/gum@latest
         _check "rustup" "bat" \
                "https://github.com/sharkdp/bat" \
-               "cat clone with syntax highlighting and Git integration" && {
-            _confirm "Install bat?" && cargo install bat
-        }
+               "cat clone with syntax highlighting and Git integration" \
+            && cargo install bat
         _check "rustup" "lsd" \
                "https://github.com/lsd-rs/lsd" \
-               "ls clone with colors and icons (need special font)" && {
-            _confirm "Install lsd?" && cargo install lsd
-        }
+               "ls clone with colors and icons (need special font)" \
+            && cargo install lsd
         _check "rustup" "starship" \
                "https://github.com/starship/starship" \
-               "modern tool for managing your shell prompt" && {
-            _confirm "Install starship?" && cargo install starship
-        }
+               "modern tool for managing your shell prompt" \
+            && cargo install starship
         _check "rustup" "ripgrep" \
                "https://github.com/BurntSushi/ripgrep" \
-               "fast search tool like grep, but with more features" && {
-            _confirm "Install ripgrep?" && cargo install ripgrep
-        }
+               "fast search tool like grep, but with more features" \
+            && cargo install ripgrep
         _check "rustup" "fd" \
                "https://github.com/sharkdp/fd" \
-               "fast and user-friendly alternative to find" && {
-            _confirm "Install fd?" && cargo install fd-find
-        }
+               "fast and user-friendly alternative to find" \
+            && cargo install fd-find
         _check "rustup" "jyt" \
                "https://github.com/ken-matsui/jyt" \
-               "convert between JSON, TOML and YAML" && {
-            _confirm "Install jyt?" && cargo install jyt
-        }
+               "convert between JSON, TOML and YAML" \
+            && cargo install jyt
     )
 }
