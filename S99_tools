@@ -13,7 +13,7 @@ function rmi_install_tools() {
             shift
             local repo="$1"
             shift
-            local prompt="Install ${tool}?"
+            local prompt="Install ${cmd}?"
             echo `_set_fgc 14` \
                  "${cmd}" \
                  `_font_reset`
