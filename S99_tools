@@ -11,19 +11,29 @@ function rmi_install_tools() {
             shift
             local repo="$1"
             shift
-            echo "${cmd}"
+            echo `_set_fgc 14` \
+                 "${cmd}" \
+                 `_font_reset`
+
             echo "          " "$@"
+
             echo -n "          " "Checking ... "
             whence -p "$tool" > /dev/null 2>&1 || {
-                echo "need '${tool}', skipped."
+                echo `_set_fgc 14` \
+                     "need '${tool}', skipped." \
+                     `_font_reset`
                 return 1
             }
             whence -p "$cmd" > /dev/null 2>&1 || {
-                echo "not found."
+                echo `_set_fgc 11` \
+                     "not found." \
+                     `_font_reset`
                 return 0
             }
 
-            echo installed.
+            echo `_set_fgc 10` \
+                installed. \
+                `_font_reset`
             return 1
         }
 
