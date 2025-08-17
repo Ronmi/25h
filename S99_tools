@@ -18,7 +18,7 @@ function rmi_install_tools() {
                 echo "need '${tool}', skipped."
                 return 1
             }
-            whence -p "$1" > /dev/null 2>&1 || {
+            whence -p "$cmd" > /dev/null 2>&1 || {
                 echo "not found."
                 return 0
             }
