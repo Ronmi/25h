@@ -26,6 +26,10 @@ Usage: ${_pg_cmd} start|stop|status
 Start, stop, or check the status of a PostgreSQL development database container.
 
 Commands:
+  info    Display connection information for the PostgreSQL development database.
+          This includes host, port, database name, username, and password.
+          Note: This information is valid until you change the environment
+          variables and restart the container.
   start   Start the PostgreSQL development database container.
   stop    Stop and remove the PostgreSQL development database container.
           Note: If you have unsaved changes in the database, they will be lost on
@@ -39,14 +43,31 @@ function _dev-pgsql_helper_container_name() {
     echo "${DEV_PGSQL_PREFIX}-dev-pgsql"
 }
 
+function _dev-pgsql_helper_info() {
+        echo "Connection details:"
+        echo -n "  Host:     "
+        if [[ "$(echo "${POSTGRES_PORT}:" | cut -d : -f 2)" == "" ]]; then
+            echo "localhost"
+        else
+            echo "$(echo "${POSTGRES_PORT}:" | cut -d : -f 1)"
+        fi
+        echo "  Port:     ${POSTGRES_PORT}"
+        echo "  Database: ${POSTGRES_DB}"
+        echo "  Username: ${POSTGRES_USER}"
+        echo "  Password: ${POSTGRES_PASSWORD}"
+        echo
+        echo "This information is valid until you change the environment variables"
+        echo "and restart the container."
+}
+
 function _dev-pgsql_helper_start() {
     local container_name="$(_dev-pgsql_helper_container_name)"
     
     # Stop and remove existing container if running
     if docker ps -a --format "table {{.Names}}" | grep -q "^${container_name}$"; then
-        echo "Stopping existing container: ${container_name}"
-        docker stop "${container_name}" >/dev/null 2>&1
-        docker rm "${container_name}" >/dev/null 2>&1
+        echo "PostgreSQL development database container already exists."
+        _dev-pgsql_helper_info
+        return 1
     fi
     
     # Start new PostgreSQL container
@@ -60,17 +81,8 @@ function _dev-pgsql_helper_start() {
         -p "${POSTGRES_PORT}:5432" \
         postgres:latest || return $?
     
-    echo "Database container started. Connection details:"
-    echo -n "  Host:     "
-    if [[ "$(echo "${POSTGRES_PORT}:" | cut -d : -f 2)" == "" ]]; then
-        echo "localhost"
-    else
-        echo "$(echo "${POSTGRES_PORT}:" | cut -d : -f 1)"
-    fi
-    echo "  Port:     ${POSTGRES_PORT}"
-    echo "  Database: ${POSTGRES_DB}"
-    echo "  Username: ${POSTGRES_USER}"
-    echo "  Password: ${POSTGRES_PASSWORD}"
+    echo -n "Database container started. "
+    _dev-pgsql_helper_info
 }
 
 function _dev-pgsql_helper_stop() {
@@ -105,6 +117,9 @@ function _run_dev-pgsql_cmd() {
     local action="$1"
     shift
     case "$action" in
+        info)
+            _dev-pgsql_helper_info
+            ;;
         start)
             _dev-pgsql_helper_start
             ;;
@@ -130,6 +145,7 @@ function _pg_cmd_completions() {
     if (( CURRENT == 2 )); then
         local -a commands
         commands=(
+            "info:Display connection information for the PostgreSQL development database"
             "start:Start the PostgreSQL development database container"
             "stop:Stop and remove the PostgreSQL development database container"
             "restart:Restart the PostgreSQL development database container (content will be lost)"
