@@ -32,8 +32,6 @@ then
         echo '!.gitignore' >> "${_RMI_WORK_HERE}/.rmi-work/.gitignore"
     fi
 
-    source "${HOME}/.zsh.d/lib/_boot.sh"
-
     # initialize
     export _RMI_WORK_DIR="${_RMI_WORK_HERE}/.rmi-work"
     if [[ -f "${_RMI_WORK_HERE}/.rmi-work/conf.zsh" ]]
