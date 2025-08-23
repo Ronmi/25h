@@ -20,6 +20,8 @@ Available commands:
             Run 'claude --model opus'
     cs
             Run 'claude --model sonnet'
+    c
+            Run 'codex' with mcp servers defined in .mcp.json (if any)
     use server-preset-name
             Create project-local settings with specified MCP server.
 
@@ -190,6 +192,21 @@ function _ai_helper_use_pyright() {
     _ai_helper_use_langserver pyright pyright-langserver -- --stdio
 }
 
+function _ai_helper_check_codex() {
+    _has_prog codex || {
+        echo -n 'Installing Codex CLI ... '
+        _download_latest_release_from_github openai codex codex-x86_64-unknown-linux-gnu.tar.gz -O - | tar xzf - -C "${HOME}/bin/" && mv "${HOME}/bin/codex-x86_64-unknown-linux-gnu" "${HOME}/bin/codex"
+        if [[ $? -ne 0 ]]
+        then
+            echo 'failed.'
+            echo
+            echo "Failed to install Codex CLI. Please install the Codex CLI manually."
+            return 1
+        fi
+        echo "done."
+    }
+}
+
 function _ai_helper_check_gemini() {
     which gemini >/dev/null 2>&1 && return 0
     echo -n 'Installing Gemini CLI ... '
@@ -233,6 +250,10 @@ function _run_ai_cmd() {
     local cmd="$1"
     shift
     case "$cmd" in
+        c)
+            _ai_helper_check_codex || return 1
+            codex -c "mcp_servers=$(jq .mcpServers "${_RMI_WORK_HERE}/.mcp.json" -cM | sed 's/":/"=/g')" "$@"
+            ;;
         gp)
             _ai_helper_check_gemini || return 1
             _ai_helper_exec gemini -m gemini-2.5-pro "$@"
@@ -299,6 +320,7 @@ function _ai_helper_completions() {
     if (( CURRENT == 2 )); then
         local -a commands
         commands=(
+            'c:Run Codex with MCP servers defined in .mcp.json'
             'gp:Run Gemini 2.5 Pro'
             'gs:Run Gemini 2.5 Flash'
             'cs:Run Claude Sonnet'
