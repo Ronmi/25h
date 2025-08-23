@@ -116,3 +116,22 @@ function _font_bold() {
         echo -n "\033[1m"
     fi
 }
+
+###### misc
+
+function _download_latest_release_from_github() {
+    if [[ $# -lt 3 ]]
+    then
+        echo "Usage: _download_latest_from_github <owner> <repo> <file> [options for wget ...]"
+        return 1
+    fi
+
+    local fn="$3"
+    local uri="$(wget -qO - "https://api.github.com/repos/${1}/${2}/releases/latest" | grep browser_download_url | grep -F "$fn" | cut -d : -f 2- | jq . -r)"
+    shift;shift;shift
+    _has_arg -O "$@" && {
+        wget "$uri" "$@"
+        return $?
+    }
+    wget -O "$fn" "$uri" "$@"
+}
