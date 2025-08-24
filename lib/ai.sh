@@ -32,7 +32,7 @@ Available commands:
                 pyright: language server with python (pyright-langserver)
 USAGE1
 
-    find "${HOME}/.zsh.d/lib/ai" -name "_ai.*.sh" -type f,l | while read -r fn
+    find "${HOME}/.zsh.d/lib/ai" -name "_ai_mcp.*.sh" -type f,l | while read -r fn
     do
         local name="$(echo "$fn" | xargs basename | cut -d '.' -f 2)"
         local desc="$(source "$fn" && ai_mcp_desc)"
@@ -41,7 +41,7 @@ USAGE1
 
     if [[ -d "${HOME}/.zsh.d/lib/local/" ]]
     then
-        find "${HOME}/.zsh.d/lib/local/" -name "_ai.*.sh" -type f,l | while read -r fn
+        find "${HOME}/.zsh.d/lib/local/" -name "_ai_mcp.*.sh" -type f,l | while read -r fn
         do
             local name="$(echo "$fn" | xargs basename | cut -d '.' -f 2)"
             local desc="$(source "$fn" && ai_mcp_desc)"
@@ -109,10 +109,10 @@ function _ai_helper_use_local_formatter() {
 }
 
 function _ai_helper_use_local() {
-    local fn="${HOME}/.zsh.d/lib/local/_ai.${1}.sh"
+    local fn="${HOME}/.zsh.d/lib/local/_ai_mcp.${1}.sh"
     if [[ ! -f "$fn" ]]
     then
-        fn="${HOME}/.zsh.d/lib/ai/_ai.${1}.sh"
+        fn="${HOME}/.zsh.d/lib/ai/_ai_mcp.${1}.sh"
         if [[ ! -f "$fn" ]]
         then
             return 1
@@ -306,14 +306,14 @@ function _run_ai_cmd() {
                     _ai_helper_use_pyright || return $?
                     ;;
                 *)
-                    local fn="${HOME}/.zsh.d/lib/local/_ai.${1}.sh"
+                    local fn="${HOME}/.zsh.d/lib/local/_ai_mcp.${1}.sh"
                     if [[ -f "$fn" ]]
                     then
                         _ai_helper_use_local "$@" && echo "${1} has been configured."
                         return $?
                     fi
 
-                    fn="${HOME}/.zsh.d/lib/ai/_ai.${1}.sh"
+                    fn="${HOME}/.zsh.d/lib/ai/_ai_mcp.${1}.sh"
                     if [[ -f "$fn" ]]
                     then
                         _ai_helper_use_local "$@" && echo "${1} has been configured."
@@ -363,7 +363,7 @@ function _ai_helper_completions() {
             'tsls:Use language server for TypeScript (typescript-language-server)'
             'pyright:Use language server for Python (pyright-langserver)'
         )
-        find "${HOME}/.zsh.d/lib/ai" -name "_ai.*.sh" -type f,l | while read -r fn
+        find "${HOME}/.zsh.d/lib/ai" -name "_ai_mcp.*.sh" -type f,l | while read -r fn
         do
             local name="$(echo "$fn" | xargs basename | cut -d '.' -f 2)"
             local desc="$(source "$fn" && ai_mcp_desc)"
@@ -371,7 +371,7 @@ function _ai_helper_completions() {
         done
         if [[ -d "${HOME}/.zsh.d/lib/local/" ]]
         then
-            find "${HOME}/.zsh.d/lib/local/" -name "_ai.*.sh" -type f,l | while read -r fn
+            find "${HOME}/.zsh.d/lib/local/" -name "_ai_mcp.*.sh" -type f,l | while read -r fn
             do
                 local name="$(echo "$fn" | xargs basename | cut -d '.' -f 2)"
                 local desc="$(source "$fn" && ai_mcp_desc)"
