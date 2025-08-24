@@ -179,7 +179,7 @@ function _ai_helper_use_tsls() {
                 || return $?
     }
 
-    _ai_helper_use_langserver tsls typescript-language-server
+    _ai_helper_use_langserver tsls typescript-language-server -- --stdio
 }
 
 function _ai_helper_use_pyright() {
