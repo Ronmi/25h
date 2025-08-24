@@ -195,7 +195,9 @@ function _ai_helper_use_pyright() {
 function _ai_helper_check_codex() {
     _has_prog codex || {
         echo -n 'Installing Codex CLI ... '
-        _download_latest_release_from_github openai codex codex-x86_64-unknown-linux-gnu.tar.gz -O - | tar xzf - -C "${HOME}/bin/" && mv "${HOME}/bin/codex-x86_64-unknown-linux-gnu" "${HOME}/bin/codex"
+        local tri="$(uname -m)-$(uname -p)-$(uname -s)"
+        tri="$(echo "$tri" | tr '[:upper:]' '[:lower:]')"
+        _download_latest_release_from_github openai codex "codex-${tri}-gnu.tar.gz" -O - | tar xzf - -C "${HOME}/bin/" && mv "${HOME}/bin/codex-${tri}-gnu" "${HOME}/bin/codex"
         if [[ $? -ne 0 ]]
         then
             echo 'failed.'
