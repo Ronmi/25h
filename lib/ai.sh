@@ -268,7 +268,12 @@ function _run_ai_cmd() {
     case "$cmd" in
         c)
             _ai_helper_check_codex || return 1
-            codex -c "mcp_servers=$(jq .mcpServers "${_RMI_WORK_HERE}/.mcp.json" -cM | sed 's/":/"=/g')" "$@"
+            if [[ -f "${_RMI_WORK_HERE}/.mcp.json" ]]
+            then
+                codex -c "mcp_servers=$(jq .mcpServers "${_RMI_WORK_HERE}/.mcp.json" -cM | sed 's/":/"=/g')" "$@"
+            else
+                codex "$@"
+            fi
             ;;
         gp)
             _ai_helper_check_gemini || return 1
