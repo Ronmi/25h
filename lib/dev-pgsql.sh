@@ -90,7 +90,7 @@ function _dev-pgsql_helper_stop() {
     
     if docker ps --format "table {{.Names}}" | grep -q "^${container_name}$"; then
         echo "Stopping PostgreSQL development database..."
-        docker kill "${container_name}"
+        docker rm -f "${container_name}"
         echo "Database container stopped and removed."
     else
         echo "Development database container is not running."
