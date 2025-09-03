@@ -4,7 +4,9 @@ function rmi_install_tools() {
     (
         source "${HOME}/.zsh.d/lib/_lib.sh"
         local update=false
+        local force=false
         _has_arg "-u" "$@" && update=true
+        _has_arg "-f" "$@" && force=true
 
         function _check() {
             local tool="$1"
@@ -31,8 +33,8 @@ function rmi_install_tools() {
                 echo `_set_fgc 11` \
                      "not found." \
                      `_font_reset`
-                _confirm "$prompt"
-                return $?
+                [[ $force == true ]] || _confirm "$prompt" || return 1
+                return 0
             }
 
             if [[ $update == true ]]; then
@@ -60,7 +62,9 @@ If you don't want to install from source, reach to the repo for instructions abo
 how to install pre-built binaries (like downloading from releases page or using
 a package manager).
 
-You can also use the -u option to update tools that are already installed.
+There are two options supported:
+  -u     update tools that are already installed.
+  -f     install or update without confirmation.
 
 EOF
 
