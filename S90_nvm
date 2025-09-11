@@ -6,9 +6,12 @@ then
 fi
 
 function __use_nvm() {
+    whence -p pnpm > /dev/null 2>&1 && unset -f pnpm pnpx > /dev/null 2>&1
+    whence -p yarn > /dev/null 2>&1 && unset -f yarn
+
     if [[ -s "${NVM_DIR}/nvm.sh" ]]
     then
-        unset -f npm npx nvm node pnpm pnpx yarn
+        unset -f npm npx nvm node > /dev/null 2>&1
         . "${NVM_DIR}/nvm.sh"
         return 0
     else
