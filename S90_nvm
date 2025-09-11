@@ -6,9 +6,6 @@ then
 fi
 
 function __use_nvm() {
-    whence -p pnpm > /dev/null 2>&1 && unset -f pnpm pnpx > /dev/null 2>&1
-    whence -p yarn > /dev/null 2>&1 && unset -f yarn
-
     if [[ -s "${NVM_DIR}/nvm.sh" ]]
     then
         unset -f npm npx nvm node > /dev/null 2>&1
@@ -37,14 +34,17 @@ function npx() {
 }
 
 function yarn() {
-    __use_nvm && yarn "$@"
+    whence -p yarn > /dev/null 2>&1 && unset -f yarn > /dev/null 2>&1 || __use_nvm || return $?
+    yarn "$@"
 }
 
 function pnpm() {
-    __use_nvm && pnpm "$@"
+    whence -p pnpm > /dev/null 2>&1 && unset -f pnpm pnpx > /dev/null 2>&1 || __use_nvm || return $?
+    pnpm "$@"
 }
 
 function pnpx() {
+    whence -p pnpm > /dev/null 2>&1 && unset -f pnpm pnpx > /dev/null 2>&1 || __use_nvm || return $?
     __use_nvm && pnpx "$@"
 }
 
