@@ -41,7 +41,18 @@ function go {
         _confirm "Go is not installed. Do you want to install it now?" || return 0
 
         echo -n "detecting cpu architecture ... "
-        arch="$(uname -r | grep -oE -- '-[a-z0-9_]+$' | cut -d '-' -f 2)"
+        arch="$(case "$(uname -m)" in
+x86_64)
+  echo "amd64"
+  ;;
+aarch64)
+  echo "arm64"
+  ;;
+*)
+  echo "amd64"
+  ;;
+esac
+)"
         echo $arch
         set -e
         echo -n "fetching go version ... "
