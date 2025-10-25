@@ -6,12 +6,6 @@
 #
 # GOPATH: $HOME/go
 # GOROOT: $HOME/goroot
-#
-# MULTIPLE GO VERSION
-#
-# Put different version in $HOME/golang/name like $HOME/golang/1.9, $HOME/golang/tip
-#
-# You can use different verion by go1.9/gotip
 
 if [[ -z $GOPATH ]]
 then
@@ -21,24 +15,10 @@ fi
 export PATH="${GOPATH}/bin:${PATH}"
 ln -sfT "${GOPATH}/bin" "${HOME}/bin/golang"
 
-if [[ -d "${HOME}/golang" ]]
-then
-    for i in $(find ~/golang -mindepth 1 -maxdepth 1 -type d -exec basename {} ';')
-    do
-        alias "go${i}"="${HOME}/golang/${i}/bin/go"
-    done
-fi
-
-function go {
-    whence -p go >/dev/null 2>&1 && {
-        unset -f go
-        go "$@"
-        return $?
-    }
-
+function download_new_go {
     (
         source "${HOME}/.zsh.d/lib/_lib.sh"
-        _confirm "Go is not installed. Do you want to install it now?" || return 0
+        _confirm "Do you want to install latest Golang toolchain now?" || return 0
 
         echo -n "detecting cpu architecture ... "
         arch="$(case "$(uname -m)" in
@@ -61,17 +41,27 @@ esac
         echo "$ver"
 
         set +e
-        rm -fr "${HOME}/golang/${ver}"
+        rm -fr "${HOME}/golang"
 
-        echo "download into ${HOME}/golang/${ver}..."
+        echo "download into ${HOME}/golang ..."
         echo
 
         set -e
-        mkdir -p "${HOME}/golang/${ver}"
-        curl -sSL "https://go.dev/dl/${fn}" | tar zxvf - -C "${HOME}/golang/${ver}" --strip-components 1
-        ln -sfT "${HOME}/golang/${ver}/bin/go" "${HOME}/bin/go"
+        mkdir -p "${HOME}/golang"
+        curl -sSL "https://go.dev/dl/${fn}" | tar zxvf - -C "${HOME}/golang" --strip-components 1
+        ln -sfT "${HOME}/golang/bin/go" "${HOME}/bin/go"
+    )
+}
 
+function go {
+    whence -p go >/dev/null 2>&1 && {
         unset -f go
         go "$@"
-    )
+        return $?
+    }
+
+    download_new_go && {
+        unset -f go
+        go "$@"
+    }
 }
