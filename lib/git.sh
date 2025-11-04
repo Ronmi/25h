@@ -13,3 +13,12 @@ function _gitsync() {
 function gitsync() {
     _gitsync "${1:-master}"
 }
+
+function git() {
+    if [[ "$1" == "sync" ]]; then
+        shift
+        _gitsync "${1:-master}"
+    else
+        command git "$@"
+    fi
+}
