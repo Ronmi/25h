@@ -2,6 +2,7 @@
 # create mysql database service with docker for local development
 
 # customizable variables
+DEV_MYSQL_IMAGE="${DEV_MYSQL_IMAGE:-mysql:latest}"
 DEV_MYSQL_PREFIX="${DEV_MYSQL_PREFIX:-$(basename "$_RMI_WORK_HERE")}"
 DEV_MYSQL_INIT_DIR="${DEV_MYSQL_INIT_DIR:-$(pwd)/db_schema}"
 MYSQL_DATABASE="${MYSQL_DATABASE:-$DEV_MYSQL_PREFIX}"
@@ -9,7 +10,7 @@ MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-devpass}"
 MYSQL_PORT="${MYSQL_PORT:-3306}"
 
 # automatically set the MySQL host based on the port
-MYSQL_HOST="localhost"
+MYSQL_HOST="127.0.0.1"
 if [[ "$(echo "${MYSQL_PORT}:" | cut -d : -f 2)" != "" ]]; then
     MYSQL_HOST="$(echo "${MYSQL_PORT}:" | cut -d : -f 1)"
 fi
@@ -77,7 +78,7 @@ function _dev-mysql_helper_start() {
         -e "MYSQL_DATABASE=${MYSQL_DATABASE}" \
         -e "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}" \
         -p "${MYSQL_PORT}:3306" \
-        mysql:latest || return $?
+        "$DEV_MYSQL_IMAGE" || return $?
     
     echo -n "Database container started. "
     _dev-mysql_helper_info
