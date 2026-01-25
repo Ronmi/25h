@@ -1,6 +1,8 @@
 #!/usr/bin/zsh -f
 # create postgres database service with docker for local development
 
+loadlib _lib
+
 # customizable variables
 DEV_PGSQL_PREFIX="${DEV_PGSQL_PREFIX:-$(basename "$_RMI_WORK_HERE")}"
 DEV_PGSQL_INIT_DIR="${DEV_PGSQL_INIT_DIR:-$(pwd)/db_schema}"
