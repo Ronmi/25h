@@ -1,0 +1,30 @@
+#!/usr/bin/zsh -f
+
+export PATH="${PATH}:${HOME}/.bun/bin"
+
+function bun() {
+    if [[ -s "${HOME}/.bun/bin/bun" ]]
+    then
+        unset -f bun > /dev/null 2>&1
+        "${HOME}/.bun/bin/bun" "$@"
+    else
+        loadlib _lib
+        if _confirm "bun not found in ${HOME}/.bun/bin/bun. Do you want to install bun?"
+        then
+            curl -fsSL https://bun.sh/install | bash
+            if [[ -s "${HOME}/.bun/bin/bun" ]]
+            then
+                unset -f bun > /dev/null 2>&1
+                "${HOME}/.bun/bin/bun" "$@"
+            else
+                echo "bun installation failed. Please check the installation script output for details."
+                echo "You can also try installing bun manually by running the following command in your terminal:"
+                echo "curl -fsSL https://bun.sh/install | bash"
+                return 1
+            fi
+        else
+            echo "bun not found in ${HOME}/.bun/bin/bun"
+            return 1
+        fi
+    fi
+}
