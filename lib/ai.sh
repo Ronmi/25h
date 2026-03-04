@@ -13,9 +13,9 @@ Usage: ${_ai_cmd} [options] <command> [args...]
 
 Available commands:
     gp
-            Run 'gemini -m gemini-2.5-pro'
+            Run 'gemini -m gemini-3-pro'
     gs
-            Run 'gemini -m gemini-2.5-flash'
+            Run 'gemini -m gemini-3-flash'
     cp
             Run 'claude --model opus'
     cs
