@@ -51,7 +51,7 @@ function pnpx() {
 export PNPM_HOME="${HOME}/.local/share/pnpm"
 export PATH="${PATH}:${HOME}/.yarn/bin:${PNPM_HOME}"
 
-test -d "$PNPM_HOME" && ln -sfT "${PNPM_HOME}" "${HOME}/bin/pnpm"
+test -d "$PNPM_HOME" && ln -sfT "${PNPM_HOME}/bin" "${HOME}/bin/pnpm"
 
 ln -sfT "${HOME}/.yarn/bin" "${HOME}/bin/yarn"
 if [[ "$NVM_BIN" != "" ]]
