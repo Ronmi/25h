@@ -49,7 +49,7 @@ function pnpx() {
 }
 
 export PNPM_HOME="${HOME}/.local/share/pnpm"
-export PATH="${PATH}:${HOME}/.yarn/bin:${PNPM_HOME}"
+export PATH="${HOME}/.yarn/bin:${PNPM_HOME}/bin:${PATH}"
 
 test -d "$PNPM_HOME" && ln -sfT "${PNPM_HOME}/bin" "${HOME}/bin/pnpm"
 
