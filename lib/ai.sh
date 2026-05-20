@@ -16,6 +16,8 @@ Available commands:
             Run 'claude'
     g, gemini
             Run 'gemini'
+    a, agy
+            Run 'antigravity'
     d, codex
             Run 'codex'
     help
@@ -58,6 +60,20 @@ function _ai_helper_check_gemini() {
     echo "done."
 }
 
+function _ai_helper_check_agy() {
+    which agy >/dev/null 2>&1 && return 0
+    echo -n 'Installing Antigravity CLI ... '
+    curl -fsSL https://antigravity.google/cli/install.sh | bash
+    if [[ $? -ne 0 ]]
+    then
+        echo 'failed.'
+        echo
+        echo "Failed to install Antigravity CLI. Please install the Antigravity CLI manually."
+        return 1
+    fi
+    echo "done."
+}
+
 function _ai_helper_check_claude_code() {
     which claude >/dev/null 2>&1 && return 0
     echo -n 'Installing Claude Code ... '
@@ -95,6 +111,10 @@ function _run_ai_cmd() {
             _ai_helper_check_gemini || return 1
             _ai_helper_exec gemini "$@"
             ;;
+        a|agy)
+            _ai_helper_check_agy || return 1
+            _ai_helper_exec agy "$@"
+            ;;
         d|codex)
             _ai_helper_check_codex || return 1
             _ai_helper_exec codex "$@"
@@ -120,6 +140,8 @@ function _ai_helper_completions() {
             'claude:Run Claude Code'
             'g:Run Gemini CLI'
             'gemini:Run Gemini CLI'
+            'a:Run Antigravity CLI'
+            'agy:Run Antigravity CLI'
             'd:Run Codex CLI'
             'codex:Run Codex CLI'
             'help:Show this help message'
