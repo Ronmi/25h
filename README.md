@@ -1,7 +1,7 @@
 25h
 ===
 
-my zsh configuration (mainly with fizsh)
+my zsh configuration
 
 ## Usage
 
@@ -9,9 +9,10 @@ my zsh configuration (mainly with fizsh)
 # clone it
 git clone https://github.com/Ronmi/25h "${HOME}/.zsh.d"
 
-# update fizsh config
-echo 'source "${HOME}/.zsh.d/zshrc"' >> "${HOME}/.fizsh/.zshrc"
-# or with zsh
+# clone required plugins (run in ~/.zsh.d)
+git submodule update -init --recursive --remote
+
+# setup dotfile with zsh
 ln -sf "${HOME}/.zsh.d/zshrc" "${HOME}/.zshrc"
 
 # done, open a new terminal or re-login to enable

@@ -1,0 +1,10 @@
+#!/usr/bin/zsh -f
+
+if which fzf > /dev/null 2>&1
+then
+    source <(fzf --zsh)
+else
+    # use zaw
+    source ~/.zsh.d/zaw/zaw.zsh
+    bindkey '^r' zaw-history
+fi

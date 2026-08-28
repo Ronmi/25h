@@ -72,6 +72,10 @@ EOF
                "https://github.com/charmbracelet/gum" \
                "fancy CLI UI toolset like confirm, select and more" \
             && go install github.com/charmbracelet/gum@latest
+        _check "go" "fzf" \
+               "https://github.com/junegunn/fzf" \
+               "fuzzy finder for the command line" \
+            && go install github.com/junegunn/fzf@latest
         _check "rustup" "bat" \
                "https://github.com/sharkdp/bat" \
                "cat clone with syntax highlighting and Git integration" \
