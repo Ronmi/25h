@@ -32,8 +32,3 @@ lh -sf "${HOME}/.zsh.d/bash_profile" "${HOME}/.profie"
   * overwrites `cd` command, execute cd without args will go back to project root
 - `S90_*`: various devtools support
 
-#### Notable helper: AI helper
-
-A new "**workhere**" helper for AI assistants has been added in `lib/ai.sh`. It can install selected (or local-managed) MCP server to supported MCP client (currently only Claude Code and Gemini CLI). It works best with `lib/dotenv.sh` helper.
-
-To create a local-managed MCP server installer, take a look at `lib/local/_ai.github.sh`. you **MUST** implement all functions correctly.
