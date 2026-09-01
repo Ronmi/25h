@@ -154,7 +154,8 @@ setopt no_rm_star_silent    # ask user before rm foo/*
 setopt no_rm_star_wait      # dont't idle 10 seconds
 
 #[ s-z ]########################################################################
-setopt no_share_history     # traditional bash-history
+#setopt no_share_history     # traditional bash-history
+setopt share_history         # share history between sessions
 setopt no_sh_file_expansion # dont expand filnames first
 setopt no_sh_glob           # allow globbing with [(|)<]
 #setopt shin_stdin           #
@@ -182,7 +183,8 @@ is-at-least 4.3.0 && {
 
 typeset -ga precmd_functions
 
-zsh_cache=$HOME/.zsh_cache
+zsh_cache=$HOME/.cache/zsh
+[ -d $zsh_cache ] || mkdir -p $zsh_cache
 
 [ -w $zsh_cache ] && HISTFILE=$zsh_cache/history
 
