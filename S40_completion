@@ -4,7 +4,7 @@ source ~/.zsh.d/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh.d/zsh-history-substring-search/zsh-history-substring-search.zsh
 source ~/.zsh.d/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-compinit -D
+compinit
 zstyle ':completion:*' add-space true
 zstyle ':completion:*' completer _expand _complete _match _prefix _approximate _list
 zstyle ':completion:*' menu select=1
