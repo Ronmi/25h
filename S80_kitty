@@ -1,0 +1,8 @@
+#[ kitty ]#####################################################################
+# kitty's shell integration registers its own _kitty on the first prompt; take
+# the commands back for completion/_kitty_unquote right after that.
+_kitty_unquote_precmd() {
+    compdef _kitty_unquote kitty kitten clone-in-kitty
+    precmd_functions=(${precmd_functions:#_kitty_unquote_precmd})
+}
+precmd_functions+=(_kitty_unquote_precmd)

@@ -1,0 +1,15 @@
+#compdef kitty kitten clone-in-kitty
+
+# Copy of kitty's shell-integration/zsh/completions/_kitty with one fix:
+# kitten does not unquote the word under the cursor, so `kitten icat foo\ b<Tab>`
+# finds nothing. Pass that word unquoted instead.
+# kitty's shell integration registers its own _kitty on the first prompt,
+# so S40_completion re-registers this one after that.
+
+(( ${+commands[kitten]} )) || builtin return
+builtin local -a w
+w=("${(@)words[1,CURRENT]}")
+w[-1]=${(Q)w[-1]}
+builtin local src cmd=${(F)w}
+src=$(builtin command kitten __complete__ zsh "_matcher=$_matcher" <<<$cmd) || builtin return
+builtin eval "$src"

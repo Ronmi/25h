@@ -58,3 +58,4 @@ zstyle ':completion:*:*:vi(m|):*:*files' ignored-patterns '*?.(aux|dvi|ps|pdf|bb
 
 autoload bashcompinit
 bashcompinit
+
