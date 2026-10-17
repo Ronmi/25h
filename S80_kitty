@@ -1,3 +1,8 @@
+if [[ "$TERM" != xterm-kitty ]]
+then
+  return
+fi
+
 #[ kitty ]#####################################################################
 # kitty's shell integration registers its own _kitty on the first prompt; take
 # the commands back for completion/_kitty_unquote right after that.
@@ -6,3 +11,5 @@ _kitty_unquote_precmd() {
     precmd_functions=(${precmd_functions:#_kitty_unquote_precmd})
 }
 precmd_functions+=(_kitty_unquote_precmd)
+
+alias ssh="kitten ssh"
