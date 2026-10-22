@@ -16,7 +16,7 @@ function loadlib {
 }
 
 function loadlib_again {
-    if [[ "${_rmi_loaded_lib[(r)$1]}" != "" ]]
+    if [[ "${_rmi_loaded_lib[(r)$1]}" == "" ]]
     then
         loadlib "$1"
         return $?
