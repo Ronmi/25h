@@ -1,7 +1,7 @@
 #!/usr/bin/zsh -f
 # source .env automatically or on-demand, set _RMI_DOTENV_AUTOLOAD to 1 (or a file) to enable autoloading, or run `useenv` to load a specific .env file in a subshell
 
-_env_file="${_RMI_WORK_HERE}/.env"
+local _env_file="${_RMI_WORK_HERE}/.env"
 local _do=0
 
 # This special envvar is used to enable autoloading
@@ -24,17 +24,16 @@ then
     source "$_env_file"
 fi
 unset _do
+unset _env_file
 
 # create a subshell and load .env.
 function useenv() {
-    local f="${1:-${_env_file}}"
-    if [[ ! -f "$f" ]]
+    local f="$1"
+    if [[ -z "$f" || ! -f "$f" ]]
     then
         echo "no env file found in ${f}"
         echo
         echo "Usage: useenv [env_file]"
-        echo
-        echo "It will use ${_env_file} if no env_file specified"
         return 1
     fi
     (
@@ -42,3 +41,5 @@ function useenv() {
         "$SHELL"
     )
 }
+
+_rmi_loaded_lib=("${(@)_rmi_loaded_lib:#dotenv}")
